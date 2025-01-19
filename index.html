@@ -65,13 +65,16 @@
   </div>
   <footer>Com muito amor, de mim para você! 💖</footer>
   <script>
-    const startDate = new Date("2023-10-19");
+    // Define a data de início do namoro
+    const startDate = new Date("2024-11-19");
     const today = new Date();
 
     // Calcula o número de dias juntos
     const timeDifference = today - startDate;
     const daysTogether = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-    document.getElementById("contador").innerText = `${daysTogether} dias`;
+    document.getElementById("contador").innerText = daysTogether >= 0 
+      ? `${daysTogether} dias`
+      : "Ainda não começou! ❤️";
 
     // Verifica se hoje é o dia 19
     if (today.getDate() === 19) {
