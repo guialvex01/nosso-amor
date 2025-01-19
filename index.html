@@ -91,23 +91,27 @@
 
       const mensagemPersonalizada = mensagens[monthsDifference] || "🎉 Mais um mês ao seu lado, e sou grato por cada momento juntos. Te amo! 💖";
 
-      const message = document.createElement("div");
-      message.style.position = "fixed";
-      message.style.top = "20%";
-      message.style.left = "50%";
-      message.style.transform = "translate(-50%, -50%)";
-      message.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
-      message.style.color = "white";
-      message.style.padding = "20px";
-      message.style.borderRadius = "10px";
-      message.style.textAlign = "center";
-      message.style.zIndex = "1000";
-      message.style.animation = "fadeIn 1s";
-      message.innerHTML = `
-        <h2>${mensagemPersonalizada}</h2>
-        <button onclick="this.parentElement.style.display='none'" style="margin-top: 10px; padding: 10px 20px; background-color: #ff6f61; border: none; border-radius: 5px; color: white; cursor: pointer;">Fechar</button>
-      `;
-      document.body.appendChild(message);
+    const message = document.createElement("div");
+message.style.position = "fixed";
+message.style.top = "20%";
+message.style.left = "50%";
+message.style.transform = "translate(-50%, -50%)";
+message.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+message.style.color = "white";
+message.style.padding = "20px";
+message.style.borderRadius = "10px";
+message.style.textAlign = "center";
+message.style.zIndex = "1000";
+message.style.width = "90%"; // Adiciona largura responsiva
+message.style.maxWidth = "400px"; // Limita a largura máxima
+message.style.boxSizing = "border-box"; // Garante que o padding não exceda o tamanho
+message.style.wordWrap = "break-word"; // Ajusta o texto quebrando palavras grandes
+message.style.animation = "fadeIn 1s"; // Efeito de entrada
+message.innerHTML = `
+    <h2>${mensagemPersonalizada}</h2>
+    <button onclick="this.parentElement.style.display='none'" style="margin-top: 10px; padding: 10px 20px; background-color: #ff6f61; border: none; border-radius: 5px; color: white; cursor: pointer;">Fechar</button>
+`;
+document.body.appendChild(message);
     }
   </script>
 </body>
