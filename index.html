@@ -77,5 +77,34 @@
     atualizaContador();
     setInterval(atualizaContador, 1000); // Atualiza a cada segundo
   </script>
+  <script>
+    // Data de início do namoro (edite aqui com a data real)
+    const startDate = new Date("2023-10-19"); // Formato: ano-mês-dia
+    const today = new Date();
+
+    // Calcula a diferença em meses e verifica se hoje é o dia exato
+    const monthsDifference = (today.getFullYear() - startDate.getFullYear()) * 12 + (today.getMonth() - startDate.getMonth());
+    if (monthsDifference === 3 && today.getDate() === startDate.getDate()) {
+        // Cria e exibe a mensagem de celebração
+        const message = document.createElement("div");
+        message.style.position = "fixed";
+        message.style.top = "20%";
+        message.style.left = "50%";
+        message.style.transform = "translate(-50%, -50%)";
+        message.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+        message.style.color = "white";
+        message.style.padding = "20px";
+        message.style.borderRadius = "10px";
+        message.style.textAlign = "center";
+        message.style.zIndex = "1000";
+        message.innerHTML = `
+            <h2>🎉 Parabéns pelos 3 meses de namoro! 🎉</h2>
+            <p>Esses 3 meses são só o começo de algo muito maior. Quero estar ao seu lado por muito mais tempo, construindo cada capítulo da nossa história juntos! TE AMO MUITO MINHA PRINCESA 💖</p>
+            <button onclick="this.parentElement.style.display='none'" style="margin-top: 10px; padding: 10px 20px; background-color: #ff6f61; border: none; border-radius: 5px; color: white; cursor: pointer;">Fechar</button>
+        `;
+        document.body.appendChild(message);
+    }
+</script>
+
 </body>
 </html>
