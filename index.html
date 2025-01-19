@@ -44,6 +44,14 @@
       font-size: 0.9em;
       color: #555;
     }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 <body>
@@ -52,23 +60,23 @@
   <p>Estamos juntos há:</p>
   <div class="contador" id="contador"></div>
   <div class="fotos">
-    <!-- Fotos adicionadas -->
     <img src="F65C45F2-8E9C-4735-A9DB-B81793FB18F7.jpeg" alt="Foto do casal na praia">
     <img src="E9A4784E-6978-4C71-AD28-C0E6F0347C52.jpeg" alt="Foto do casal no carro">
   </div>
   <footer>Com muito amor, de mim para você! 💖</footer>
   <script>
-  // Data de início do namoro (substitua pela data real)
-const startDate = new Date("2023-10-19"); // Formato: ano-mês-dia
-const today = new Date();
+    const startDate = new Date("2023-10-19");
+    const today = new Date();
 
-// Verifica se hoje é o dia 19
-if (today.getDate() === 19) {
-    // Calcula o número de meses desde o início do namoro
-    const monthsDifference = (today.getFullYear() - startDate.getFullYear()) * 12 + (today.getMonth() - startDate.getMonth());
-    
-    // Define mensagens personalizadas para cada mês
-    const mensagens = {
+    // Calcula o número de dias juntos
+    const timeDifference = today - startDate;
+    const daysTogether = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    document.getElementById("contador").innerText = `${daysTogether} dias`;
+
+    // Verifica se hoje é o dia 19
+    if (today.getDate() === 19) {
+      const monthsDifference = (today.getFullYear() - startDate.getFullYear()) * 12 + (today.getMonth() - startDate.getMonth());
+      const mensagens = {
         1: "🎉 Parabéns pelo nosso primeiro mês de namoro! Que seja o início de uma linda história juntos. 💖",
         2: "🎉 Dois meses ao seu lado, e meu coração só tem certeza de uma coisa: quero mais e mais! 💞",
         3: "🎉 Três meses de amor! Estamos apenas começando a construir algo incrível. Te amo! 💕",
@@ -76,31 +84,28 @@ if (today.getDate() === 19) {
         5: "🎉 Cinco meses juntos! Obrigado por me fazer tão feliz. 🌹",
         6: "🎉 Meio ano de namoro! Cada dia ao seu lado é inesquecível. Amo você! 💘",
         12: "🎉 Um ano de amor! Obrigado por tornar minha vida mais especial a cada dia. ❤",
-    };
+      };
 
-    // Mensagem padrão se não houver uma específica
-    const mensagemPersonalizada = mensagens[monthsDifference] || "🎉 Mais um mês ao seu lado, e sou grato por cada momento juntos. Te amo! 💖";
+      const mensagemPersonalizada = mensagens[monthsDifference] || "🎉 Mais um mês ao seu lado, e sou grato por cada momento juntos. Te amo! 💖";
 
-    // Cria e exibe a mensagem
-    const message = document.createElement("div");
-    message.style.position = "fixed";
-    message.style.top = "20%";
-    message.style.left = "50%";
-    message.style.transform = "translate(-50%, -50%)";
-    message.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
-    message.style.color = "white";
-    message.style.padding = "20px";
-    message.style.borderRadius = "10px";
-    message.style.textAlign = "center";
-    message.style.zIndex = "1000";
-    message.style.animation = "fadeIn 1s"; // Efeito de entrada
-    message.innerHTML = `
+      const message = document.createElement("div");
+      message.style.position = "fixed";
+      message.style.top = "20%";
+      message.style.left = "50%";
+      message.style.transform = "translate(-50%, -50%)";
+      message.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+      message.style.color = "white";
+      message.style.padding = "20px";
+      message.style.borderRadius = "10px";
+      message.style.textAlign = "center";
+      message.style.zIndex = "1000";
+      message.style.animation = "fadeIn 1s";
+      message.innerHTML = `
         <h2>${mensagemPersonalizada}</h2>
         <button onclick="this.parentElement.style.display='none'" style="margin-top: 10px; padding: 10px 20px; background-color: #ff6f61; border: none; border-radius: 5px; color: white; cursor: pointer;">Fechar</button>
-    `;
-    document.body.appendChild(message);
-}
-    
-</script>
+      `;
+      document.body.appendChild(message);
+    }
+  </script>
 </body>
 </html>
