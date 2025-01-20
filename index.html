@@ -141,7 +141,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCEtGOJ0Il1C7tXe3CVz4QSvCU7wA_74NI",
@@ -203,7 +203,6 @@
           <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString()})</small></h3>
           <p>${event.description}</p>
           <button class="edit-btn">Editar</button>
-          <button class="delete-btn">Excluir</button>
         `;
         timelineDiv.appendChild(eventDiv);
 
@@ -221,12 +220,6 @@
 
           const eventRef = ref(database, `timeline/${event.id}`);
           update(eventRef, updatedEvent);
-        });
-
-        // Excluir evento
-        eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
-          const eventRef = ref(database, `timeline/${event.id}`);
-          remove(eventRef);
         });
       });
     };
