@@ -107,7 +107,6 @@
     <img src="F65C45F2-8E9C-4735-A9DB-B81793FB18F7.jpeg" alt="Foto do casal na praia">
     <img src="E9A4784E-6978-4C71-AD28-C0E6F0347C52.jpeg" alt="Foto do casal no carro">
   </div>
-
   <!-- Linha do tempo -->
   <div class="timeline">
     <h2>Linha do Tempo</h2>
@@ -135,9 +134,9 @@
     const startDate = new Date("2024-10-19");
     function atualizaContador() {
       const hoje = new Date();
-      const diff = hoje - startDate;
-      const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
-      document.getElementById("contador").innerText = ${dias} dias;
+      const diff = hoje - startDate; // Diferença em milissegundos
+      const dias = Math.floor(diff / (1000 * 60 * 60 * 24)); // Converter para dias
+      document.getElementById("contador").innerText = `${dias} dias`;
     }
     atualizaContador();
 
@@ -154,6 +153,7 @@
         timelineEvents.push({ date: new Date(date), title, description });
         timelineEvents.sort((a, b) => a.date - b.date); // Ordenar por data
         renderTimeline();
+        // Limpar campos após adicionar o evento
         document.getElementById("event-date").value = "";
         document.getElementById("event-title").value = "";
         document.getElementById("event-description").value = "";
@@ -176,6 +176,7 @@
       });
     }
 
+    // Adicionar evento ao clicar no botão
     addEventButton.addEventListener("click", addEvent);
   </script>
 </body>
