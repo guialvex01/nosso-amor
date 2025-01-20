@@ -5,18 +5,88 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nosso Amor</title>
   <style>
-    /* Seu estilo permanece o mesmo */
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       text-align: center;
-      background-color: #fff5f8;
-      color: #ff007f;
+      background-color: #f8f0f6;
+      color: #d18ec9;
+      margin: 0;
+      padding: 0;
     }
     h1 {
       margin-top: 50px;
-      font-size: 2.5em;
+      font-size: 3em;
+      color: #ff66b2;
     }
-    /* Outros estilos omitidos para brevidade */
+    .texto-especial {
+      font-size: 1.3em;
+      font-style: italic;
+      margin: 20px 0;
+      color: #ff3399;
+    }
+    .contador {
+      font-size: 2em;
+      margin: 20px 0;
+      color: #ff007f;
+    }
+    .fotos img {
+      width: 45%;
+      border-radius: 15px;
+      margin: 10px;
+      transition: transform 0.3s;
+    }
+    .fotos img:hover {
+      transform: scale(1.05);
+    }
+    .timeline {
+      background-color: #ffffff;
+      padding: 20px;
+      margin: 40px 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .timeline h2 {
+      font-size: 2em;
+      color: #ff66b2;
+    }
+    .timeline-event {
+      padding: 10px;
+      margin: 10px 0;
+      background-color: #f9e4f5;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .add-event {
+      background-color: #fff;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .add-event input, .add-event textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 1em;
+    }
+    .add-event button {
+      padding: 10px 20px;
+      background-color: #ff66b2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .add-event button:hover {
+      background-color: #e55a94;
+    }
+    footer {
+      font-size: 1.2em;
+      margin-top: 50px;
+      color: #ff3399;
+    }
   </style>
 </head>
 <body>
@@ -29,15 +99,12 @@
     <img src="E9A4784E-6978-4C71-AD28-C0E6F0347C52.jpeg" alt="Foto do casal no carro">
   </div>
 
-  <!-- Linha do tempo -->
   <div class="timeline">
     <h2>Linha do Tempo</h2>
     <div id="timeline-events">
-      <!-- Eventos adicionados dinamicamente -->
     </div>
   </div>
 
-  <!-- Formulário para adicionar eventos -->
   <div class="add-event">
     <h3>Adicione um evento à linha do tempo</h3>
     <label for="event-date">Data:</label>
@@ -51,13 +118,10 @@
 
   <footer>Com muito amor, de mim para você! 💖</footer>
 
-  <!-- Firebase e script -->
   <script type="module">
-    // Importando Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
     import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
-    // Configuração do Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCEtGOJ0Il1C7tXe3CVz4QSvCU7wA_74NI",
       authDomain: "nosso-amor-1f3e8.firebaseapp.com",
@@ -69,11 +133,9 @@
       databaseURL: "https://nosso-amor-1f3e8-default-rtdb.firebaseio.com"
     };
 
-    // Inicializando Firebase
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
 
-    // Atualizar contador de dias juntos
     const startDate = new Date("2024-10-19");
     function atualizaContador() {
       const hoje = new Date();
@@ -83,10 +145,8 @@
     }
     atualizaContador();
 
-    // Referência para o banco de dados
     const timelineRef = ref(database, "timeline");
 
-    // Adicionar evento ao Firebase
     document.getElementById("add-event-btn").addEventListener("click", () => {
       const date = document.getElementById("event-date").value;
       const title = document.getElementById("event-title").value;
@@ -102,10 +162,9 @@
       }
     });
 
-    // Renderizar eventos do Firebase
     const renderTimeline = (events) => {
       const timelineDiv = document.getElementById("timeline-events");
-      timelineDiv.innerHTML = ""; // Limpar antes de renderizar
+      timelineDiv.innerHTML = "";
       events.forEach(event => {
         const eventDiv = document.createElement("div");
         eventDiv.classList.add("timeline-event");
@@ -117,13 +176,13 @@
       });
     };
 
-    // Escutando atualizações do Firebase
     onValue(timelineRef, (snapshot) => {
       const data = snapshot.val();
       const events = data ? Object.values(data) : [];
-      events.sort((a, b) => new Date(a.date) - new Date(b.date)); // Ordenar por data
+      events.sort((a, b) => new Date(a.date) - new Date(b.date));
       renderTimeline(events);
     });
   </script>
 </body>
 </html>
+
