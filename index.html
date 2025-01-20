@@ -5,113 +5,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nosso Amor</title>
   <style>
+    /* Estilos do corpo e outros elementos */
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
       text-align: center;
-      background-color: #f8f0f6;
-      color: #d18ec9;
-      margin: 0;
-      padding: 0;
+      background-color: #fff5f8;
+      color: #ff007f;
     }
     h1 {
       margin-top: 50px;
-      font-size: 3em;
-      color: #ff66b2;
+      font-size: 2.5em;
     }
     .texto-especial {
-      font-size: 1.3em;
       font-style: italic;
-      margin: 20px 0;
-      color: #ff3399;
+      margin-top: 10px;
     }
     .contador {
       font-size: 2em;
-      margin: 20px 0;
-      color: #ff007f;
+      margin-top: 20px;
     }
     .fotos img {
-      width: 45%;
-      border-radius: 15px;
       margin: 10px;
-      transition: transform 0.3s;
+      border-radius: 8px;
     }
-    .fotos img:hover {
-      transform: scale(1.05);
-    }
-    /* Estilos da Linha do Tempo */
+
+    /* Linha do Tempo */
     .timeline {
-      background-color: #cce7ff; /* Azul claro */
+      margin-top: 50px;
+      background-color: #f0f8ff;
       padding: 20px;
-      margin: 40px 0;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .timeline h2 {
-      font-size: 2em;
-      color: #ff66b2; /* Rosa */
+      border-radius: 8px;
     }
     .timeline-event {
-      padding: 10px;
-      margin: 10px 0;
-      background-color: #e6f2ff; /* Azul ainda mais suave */
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      position: relative;
+      border-bottom: 1px solid #ff007f;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
     }
-    .timeline-event h3 {
-      color: #d18ec9;
-    }
-    .timeline-event p {
-      color: #d18ec9;
-    }
-    .timeline-event button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: #ff007f;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .timeline-event button:hover {
-      background-color: #e55a94;
-    }
-    .timeline-event .edit-btn {
-      right: 60px;
-      background-color: #ff66b2;
-    }
+
+    /* Formulário para adicionar evento */
     .add-event {
-      background-color: #fff;
+      margin-top: 30px;
       padding: 20px;
-      margin: 20px 0;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      background-color: #f9e6ff;
+      border-radius: 8px;
     }
-    .add-event input, .add-event textarea {
+
+    /* Estilos dos Corações Flutuantes */
+    @keyframes coracoes-flutuando {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(-150px);
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateY(-300px);
+        opacity: 0;
+      }
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 24px;
+      color: red; /* Cor do coração */
+      animation: coracoes-flutuando 3s ease-in-out forwards;
+      z-index: 1000;
+    }
+
+    #heart-container {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      font-size: 1em;
-    }
-    .add-event button {
-      padding: 10px 20px;
-      background-color: #ff66b2;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .add-event button:hover {
-      background-color: #e55a94;
-    }
-    footer {
-      font-size: 1.2em;
-      margin-top: 50px;
-      color: #ff3399;
+      height: 100vh;
+      pointer-events: none;
     }
   </style>
 </head>
@@ -125,11 +94,15 @@
     <img src="E9A4784E-6978-4C71-AD28-C0E6F0347C52.jpeg" alt="Foto do casal no carro">
   </div>
 
+  <!-- Linha do tempo -->
   <div class="timeline">
     <h2>Linha do Tempo</h2>
-    <div id="timeline-events"></div>
+    <div id="timeline-events">
+      <!-- Eventos adicionados dinamicamente -->
+    </div>
   </div>
 
+  <!-- Formulário para adicionar eventos -->
   <div class="add-event">
     <h3>Adicione um evento à linha do tempo</h3>
     <label for="event-date">Data:</label>
@@ -141,12 +114,16 @@
     <button id="add-event-btn">Adicionar Evento</button>
   </div>
 
-  <footer>Com muito amor, de mim para você! 💖</footer>
+  <!-- Contêiner para os corações flutuantes -->
+  <div id="heart-container"></div>
 
+  <!-- Firebase e script -->
   <script type="module">
+    // Importando Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
+    // Configuração do Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCEtGOJ0Il1C7tXe3CVz4QSvCU7wA_74NI",
       authDomain: "nosso-amor-1f3e8.firebaseapp.com",
@@ -158,9 +135,11 @@
       databaseURL: "https://nosso-amor-1f3e8-default-rtdb.firebaseio.com"
     };
 
+    // Inicializando Firebase
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
 
+    // Atualizar contador de dias juntos
     const startDate = new Date("2024-10-19");
     function atualizaContador() {
       const hoje = new Date();
@@ -170,75 +149,77 @@
     }
     atualizaContador();
 
+    // Referência para o banco de dados
     const timelineRef = ref(database, "timeline");
 
+    // Função para gerar corações flutuantes
+    function gerarCoraçosFlutuantes() {
+      const heartContainer = document.getElementById("heart-container");
+
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      heart.innerText = "❤️"; // Coração vermelho
+
+      // Posição aleatória de início
+      const posX = Math.random() * window.innerWidth;
+      const posDelay = Math.random() * 2;
+
+      // Definindo a posição inicial e o delay da animação
+      heart.style.left = `${posX}px`;
+      heart.style.animationDelay = `${posDelay}s`;
+
+      heartContainer.appendChild(heart);
+
+      // Remove o coração depois que ele terminou a animação
+      setTimeout(() => {
+        heart.remove();
+      }, 3000); // Tempo igual ao da animação (3s)
+    }
+
+    // Adicionar evento ao Firebase
     document.getElementById("add-event-btn").addEventListener("click", () => {
       const date = document.getElementById("event-date").value;
       const title = document.getElementById("event-title").value;
       const description = document.getElementById("event-description").value;
 
       if (date && title && description) {
-        const dateObj = new Date(date);
-        const correctedDate = new Date(dateObj.getUTCFullYear(), dateObj.getUTCMonth(), dateObj.getUTCDate());
+        // Adicionar ao banco de dados
+        push(timelineRef, { date, title, description });
 
-        push(timelineRef, { 
-          date: correctedDate.toISOString(),
-          title, 
-          description 
-        });
-        
+        // Limpar os campos
         document.getElementById("event-date").value = "";
         document.getElementById("event-title").value = "";
         document.getElementById("event-description").value = "";
+
+        // Chamar a função para gerar os corações flutuantes
+        gerarCoraçosFlutuantes();
       } else {
         alert("Preencha todos os campos.");
       }
     });
 
+    // Renderizar eventos do Firebase
     const renderTimeline = (events) => {
       const timelineDiv = document.getElementById("timeline-events");
-      timelineDiv.innerHTML = ""; 
+      timelineDiv.innerHTML = ""; // Limpar antes de renderizar
       events.forEach(event => {
         const eventDiv = document.createElement("div");
         eventDiv.classList.add("timeline-event");
-        eventDiv.setAttribute("data-id", event.id);
         eventDiv.innerHTML = `
           <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString()})</small></h3>
           <p>${event.description}</p>
-          <button class="edit-btn">Editar</button>
-          <button class="delete-btn">Excluir</button>
         `;
         timelineDiv.appendChild(eventDiv);
-
-        eventDiv.querySelector(".edit-btn").addEventListener("click", () => {
-          document.getElementById("event-date").value = event.date.split('T')[0];
-          document.getElementById("event-title").value = event.title;
-          document.getElementById("event-description").value = event.description;
-          
-          const updatedEvent = {
-            date: document.getElementById("event-date").value,
-            title: document.getElementById("event-title").value,
-            description: document.getElementById("event-description").value
-          };
-
-          const eventRef = ref(database, `timeline/${event.id}`);
-          update(eventRef, updatedEvent);
-        });
-
-        eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
-          const eventRef = ref(database, `timeline/${event.id}`);
-          remove(eventRef);
-        });
       });
     };
 
+    // Escutando atualizações do Firebase
     onValue(timelineRef, (snapshot) => {
       const data = snapshot.val();
-      const events = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-      events.sort((a, b) => new Date(a.date) - new Date(b.date));
+      const events = data ? Object.values(data) : [];
+      events.sort((a, b) => new Date(a.date) - new Date(b.date)); // Ordenar por data
       renderTimeline(events);
     });
   </script>
 </body>
 </html>
-
