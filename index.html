@@ -40,7 +40,7 @@
     }
     /* Estilos da Linha do Tempo */
     .timeline {
-      background-color: #ffe6f2;
+      background-color: #cce7ff; /* Azul claro */
       padding: 20px;
       margin: 40px 0;
       border-radius: 10px;
@@ -48,12 +48,12 @@
     }
     .timeline h2 {
       font-size: 2em;
-      color: #ff66b2;
+      color: #ff66b2; /* Rosa */
     }
     .timeline-event {
       padding: 10px;
       margin: 10px 0;
-      background-color: #fce4ec;
+      background-color: #e6f2ff; /* Azul ainda mais suave */
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       position: relative;
@@ -141,7 +141,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCEtGOJ0Il1C7tXe3CVz4QSvCU7wA_74NI",
@@ -194,7 +194,6 @@
           <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString()})</small></h3>
           <p>${event.description}</p>
           <button class="edit-btn">Editar</button>
-          <button class="delete-btn">Excluir</button>
         `;
         timelineDiv.appendChild(eventDiv);
 
@@ -203,13 +202,15 @@
           document.getElementById("event-date").value = event.date;
           document.getElementById("event-title").value = event.title;
           document.getElementById("event-description").value = event.description;
-          push(timelineRef, { date: event.date, title: event.title, description: event.description });
-        });
+          
+          const updatedEvent = {
+            date: document.getElementById("event-date").value,
+            title: document.getElementById("event-title").value,
+            description: document.getElementById("event-description").value
+          };
 
-        // Excluir evento
-        eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
           const eventRef = ref(database, `timeline/${event.id}`);
-          remove(eventRef);
+          update(eventRef, updatedEvent);
         });
       });
     };
@@ -223,4 +224,3 @@
   </script>
 </body>
 </html>
-
