@@ -5,7 +5,97 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nosso Amor</title>
   <style>
-    /* (Mesmo CSS que antes, sem alterações) */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #fff5f8;
+      color: #ff007f;
+    }
+    h1 {
+      margin-top: 50px;
+      font-size: 2.5em;
+    }
+    p {
+      font-size: 1.2em;
+    }
+    .texto-especial {
+      font-size: 1.5em;
+      margin: 20px;
+      color: #d23669;
+      font-style: italic;
+    }
+    .contador {
+      font-size: 2em;
+      margin: 20px;
+      font-weight: bold;
+    }
+    .fotos {
+      margin: 20px;
+    }
+    .fotos img {
+      width: 300px;
+      height: auto;
+      margin: 10px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    }
+    footer {
+      margin-top: 50px;
+      font-size: 0.9em;
+      color: #555;
+    }
+    .timeline {
+      margin: 40px auto;
+      max-width: 600px;
+      text-align: left;
+      border-left: 2px solid #ff007f;
+      padding-left: 20px;
+    }
+    .timeline-event {
+      margin-bottom: 20px;
+    }
+    .timeline-event h3 {
+      margin: 0;
+      font-size: 1.2em;
+      color: #d23669;
+    }
+    .timeline-event p {
+      margin: 5px 0;
+      font-size: 1em;
+      color: #555;
+    }
+    .add-event {
+      margin: 40px auto;
+      max-width: 600px;
+      text-align: left;
+      background: #ffeaf0;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    }
+    .add-event label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .add-event input,
+    .add-event textarea,
+    .add-event button {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      font-size: 1em;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .add-event button {
+      background-color: #ff007f;
+      color: white;
+      cursor: pointer;
+    }
+    .add-event button:hover {
+      background-color: #d23669;
+    }
   </style>
 </head>
 <body>
@@ -49,14 +139,15 @@
     }
     atualizaContador();
 
-    // Array de eventos e Local Storage
+    // Carregar eventos do Local Storage
     let timelineEvents = JSON.parse(localStorage.getItem("timelineEvents")) || [];
-    let editIndex = null;
 
+    // Função para salvar no Local Storage
     function saveToLocalStorage() {
       localStorage.setItem("timelineEvents", JSON.stringify(timelineEvents));
     }
 
+    // Adicionar eventos na linha do tempo
     function addEvent() {
       const date = document.getElementById("event-date").value;
       const title = document.getElementById("event-title").value;
@@ -64,19 +155,12 @@
 
       if (date && title && description) {
         const newEvent = { date: new Date(date), title, description };
-
-        if (editIndex !== null) {
-          timelineEvents[editIndex] = newEvent; // Atualizar evento existente
-          editIndex = null;
-        } else {
-          timelineEvents.push(newEvent); // Adicionar novo evento
-        }
-
-        timelineEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+        timelineEvents.push(newEvent);
+        timelineEvents.sort((a, b) => a.date - b.date); // Ordenar por data
         saveToLocalStorage(); // Salvar no Local Storage
-        renderTimeline();
+        renderTimeline(); // Re-renderizar linha do tempo
 
-        // Limpar campos do formulário
+        // Limpar campos após adicionar
         document.getElementById("event-date").value = "";
         document.getElementById("event-title").value = "";
         document.getElementById("event-description").value = "";
@@ -85,6 +169,7 @@
       }
     }
 
+    // Renderizar eventos na linha do tempo
     function renderTimeline() {
       const timelineDiv = document.getElementById("timeline-events");
       timelineDiv.innerHTML = ""; // Limpar linha do tempo antes de re-renderizar
@@ -95,29 +180,16 @@
         eventDiv.innerHTML = `
           <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString()})</small></h3>
           <p>${event.description}</p>
-          <button onclick="editEvent(${index})">Editar</button>
-          <button onclick="deleteEvent(${index})">Excluir</button>
         `;
         timelineDiv.appendChild(eventDiv);
       });
     }
 
-    function editEvent(index) {
-      const event = timelineEvents[index];
-      document.getElementById("event-date").value = new Date(event.date).toISOString().split("T")[0];
-      document.getElementById("event-title").value = event.title;
-      document.getElementById("event-description").value = event.description;
-      editIndex = index; // Salvar índice para edição
-    }
-
-    function deleteEvent(index) {
-      timelineEvents.splice(index, 1); // Remover evento do array
-      saveToLocalStorage(); // Atualizar Local Storage
-      renderTimeline(); // Re-renderizar linha do tempo
-    }
-
-    // Carregar eventos ao iniciar
+    // Exibir a linha do tempo carregada do Local Storage
     renderTimeline();
+
+    // Adicionar evento ao clicar no botão
+    document.getElementById("add-event-btn").addEventListener("click", addEvent);
   </script>
 </body>
 </html>
