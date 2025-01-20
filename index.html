@@ -125,7 +125,7 @@
     <input type="text" id="event-title" placeholder="Ex: Dia em que nos conhecemos" required>
     <label for="event-description">Descrição:</label>
     <textarea id="event-description" rows="3" placeholder="Escreva uma breve descrição..." required></textarea>
-    <button onclick="addEvent()">Adicionar Evento</button>
+    <button id="add-event-btn">Adicionar Evento</button>
   </div>
 
   <footer>Com muito amor, de mim para você! 💖</footer>
@@ -144,6 +144,8 @@
 
     // Adicionar eventos à linha do tempo
     const timelineEvents = [];
+    const addEventButton = document.getElementById("add-event-btn");
+
     const addEvent = () => {
       const date = document.getElementById("event-date").value;
       const title = document.getElementById("event-title").value;
@@ -156,12 +158,14 @@
         document.getElementById("event-date").value = "";
         document.getElementById("event-title").value = "";
         document.getElementById("event-description").value = "";
+      } else {
+        alert("Por favor, preencha todos os campos antes de adicionar o evento.");
       }
     };
 
     const renderTimeline = () => {
       const timelineDiv = document.getElementById("timeline-events");
-      timelineDiv.innerHTML = "";
+      timelineDiv.innerHTML = ""; // Limpar a linha do tempo antes de adicionar novos eventos
       timelineEvents.forEach(event => {
         const eventDiv = document.createElement("div");
         eventDiv.classList.add("timeline-event");
@@ -172,6 +176,8 @@
         timelineDiv.appendChild(eventDiv);
       });
     };
+
+    addEventButton.addEventListener("click", addEvent);
   </script>
 </body>
 </html>
