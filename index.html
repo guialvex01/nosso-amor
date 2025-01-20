@@ -4,119 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nosso Amor</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #fff5f8;
-      color: #ff007f;
-    }
-    h1 {
-      margin-top: 50px;
-      font-size: 2.5em;
-    }
-    p {
-      font-size: 1.2em;
-    }
-    .texto-especial {
-      font-size: 1.5em;
-      margin: 20px;
-      color: #d23669;
-      font-style: italic;
-    }
-    .contador {
-      font-size: 2em;
-      margin: 20px;
-      font-weight: bold;
-    }
-    .fotos {
-      margin: 20px;
-    }
-    .fotos img {
-      width: 300px;
-      height: auto;
-      margin: 10px;
-      border-radius: 10px;
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-    }
-    footer {
-      margin-top: 50px;
-      font-size: 0.9em;
-      color: #555;
-    }
-    .timeline {
-      margin: 40px auto;
-      max-width: 600px;
-      text-align: left;
-      border-left: 2px solid #ff007f;
-      padding-left: 20px;
-    }
-    .timeline-event {
-      margin-bottom: 20px;
-    }
-    .timeline-event h3 {
-      margin: 0;
-      font-size: 1.2em;
-      color: #d23669;
-    }
-    .timeline-event p {
-      margin: 5px 0;
-      font-size: 1em;
-      color: #555;
-    }
-    .add-event {
-      margin: 40px auto;
-      max-width: 600px;
-      text-align: left;
-      background: #ffeaf0;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-    }
-    .add-event label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    .add-event input,
-    .add-event textarea,
-    .add-event button {
-      width: 100%;
-      margin-bottom: 15px;
-      padding: 10px;
-      font-size: 1em;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-    .add-event button {
-      background-color: #ff007f;
-      color: white;
-      cursor: pointer;
-    }
-    .add-event button:hover {
-      background-color: #d23669;
-    }
-  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
 </head>
 <body>
   <h1>❤ Nosso Amor ❤</h1>
-  <p class="texto-especial">"Cada dia ao seu lado é um presente que quero guardar para sempre no meu coração."</p>
-  <p>Estamos juntos há:</p>
-  <div class="contador" id="contador"></div>
-  <div class="fotos">
-    <img src="F65C45F2-8E9C-4735-A9DB-B81793FB18F7.jpeg" alt="Foto do casal na praia">
-    <img src="E9A4784E-6978-4C71-AD28-C0E6F0347C52.jpeg" alt="Foto do casal no carro">
-  </div>
-
-  <div class="timeline">
-    <h2>Linha do Tempo</h2>
-    <div id="timeline-events">
-      <!-- Eventos dinâmicos -->
-    </div>
+  <div class="timeline" id="timeline-events">
+    <!-- Linha do tempo -->
   </div>
 
   <div class="add-event">
-    <h3>Adicione um evento à linha do tempo</h3>
     <label for="event-date">Data:</label>
     <input type="date" id="event-date" required>
     <label for="event-title">Título:</label>
@@ -126,84 +24,89 @@
     <button id="add-event-btn">Adicionar Evento</button>
   </div>
 
-  <footer>Com muito amor, de mim para você! 💖</footer>
-
   <script>
-    // Contador de dias juntos
-    const startDate = new Date("2024-10-19");
-    function atualizaContador() {
-      const hoje = new Date();
-      const diff = hoje - startDate;
-      const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
-      document.getElementById("contador").innerText = `${dias} dias`;
-    }
-    atualizaContador();
+    // Configuração do Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCEtGOJ0Il1C7tXe3CVz4QSvCU7wA_74NI",
+      authDomain: "nosso-amor-1f3e8.firebaseapp.com",
+      projectId: "nosso-amor-1f3e8",
+      storageBucket: "nosso-amor-1f3e8.firebasestorage.app",
+      messagingSenderId: "380207057106",
+      appId: "1:380207057106:web:f2150d96af4018bc7d050b",
+      measurementId: "G-Z3DHV04CHB"
+    };
 
-    // Carregar eventos do Local Storage
-    let timelineEvents = JSON.parse(localStorage.getItem("timelineEvents")) || [];
+    // Inicializa o Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    // Função para salvar no Local Storage
-    function saveToLocalStorage() {
-      localStorage.setItem("timelineEvents", JSON.stringify(timelineEvents));
-    }
+    let timelineEvents = [];
 
-    // Adicionar eventos na linha do tempo
-    function addEvent() {
-      const date = document.getElementById("event-date").value;
-      const title = document.getElementById("event-title").value;
-      const description = document.getElementById("event-description").value;
-
-      if (date && title && description) {
-        const newEvent = { date: new Date(date), title, description };
-        timelineEvents.push(newEvent);
-        timelineEvents.sort((a, b) => a.date - b.date); // Ordenar por data
-        saveToLocalStorage(); // Salvar no Local Storage
-        renderTimeline(); // Re-renderizar linha do tempo
-
-        // Limpar campos após adicionar
-        document.getElementById("event-date").value = "";
-        document.getElementById("event-title").value = "";
-        document.getElementById("event-description").value = "";
-      } else {
-        alert("Por favor, preencha todos os campos antes de adicionar o evento.");
+    // Função para salvar evento no Firestore
+    async function saveEventToFirestore(event) {
+      try {
+        await db.collection("timelineEvents").add(event);
+        console.log("Evento salvo no Firestore com sucesso!");
+      } catch (error) {
+        console.error("Erro ao salvar evento no Firestore:", error);
       }
     }
 
-    // Renderizar eventos na linha do tempo
+    // Função para carregar eventos do Firestore
+    async function loadEventsFromFirestore() {
+      try {
+        const snapshot = await db.collection("timelineEvents").orderBy("date").get();
+        const events = snapshot.docs.map(doc => doc.data());
+        timelineEvents = events;
+        renderTimeline();
+      } catch (error) {
+        console.error("Erro ao carregar eventos do Firestore:", error);
+      }
+    }
+
+    // Função para renderizar linha do tempo
     function renderTimeline() {
       const timelineDiv = document.getElementById("timeline-events");
-      timelineDiv.innerHTML = ""; // Limpar linha do tempo antes de re-renderizar
+      timelineDiv.innerHTML = ""; // Limpar linha do tempo
 
-      timelineEvents.forEach((event, index) => {
+      timelineEvents.forEach(event => {
         const eventDiv = document.createElement("div");
-        eventDiv.classList.add("timeline-event");
         eventDiv.innerHTML = `
-          <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString()})</small></h3>
+          <h3>${event.title} (${new Date(event.date).toLocaleDateString()})</h3>
           <p>${event.description}</p>
         `;
         timelineDiv.appendChild(eventDiv);
       });
     }
 
-    // Exibir a linha do tempo carregada do Local Storage
-    renderTimeline();
+    // Adicionar evento
+    function addEvent() {
+      const date = document.getElementById("event-date").value;
+      const title = document.getElementById("event-title").value;
+      const description = document.getElementById("event-description").value;
 
-    // Adicionar evento ao clicar no botão
+      if (date && title && description) {
+        const newEvent = { 
+          date: new Date(date).toISOString(), 
+          title, 
+          description 
+        };
+
+        saveEventToFirestore(newEvent);
+
+        document.getElementById("event-date").value = "";
+        document.getElementById("event-title").value = "";
+        document.getElementById("event-description").value = "";
+
+        alert("Evento adicionado com sucesso!");
+      } else {
+        alert("Preencha todos os campos!");
+      }
+    }
+
     document.getElementById("add-event-btn").addEventListener("click", addEvent);
-  </script>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nosso Amor</title>
 
-  <!-- Adicione os scripts do Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js"></script>
-</head>
-<body>
-  <h1>Nosso Amor - Linha do Tempo</h1>
+    loadEventsFromFirestore();
+  </script>
 </body>
 </html>
