@@ -99,7 +99,7 @@
   </style>
 </head>
 <body>
-  <h1>❤️ Nosso Amor ❤️</h1>
+  <h1>❤ Nosso Amor ❤</h1>
   <p class="texto-especial">"Cada dia ao seu lado é um presente que quero guardar para sempre no meu coração."</p>
   <p>Estamos juntos há:</p>
   <div class="contador" id="contador"></div>
@@ -131,22 +131,21 @@
   <footer>Com muito amor, de mim para você! 💖</footer>
 
   <script>
-    // Contador de tempo juntos
+    // Contador de dias juntos
     const startDate = new Date("2024-10-19");
-    const atualizaContador = () => {
+    function atualizaContador() {
       const hoje = new Date();
       const diff = hoje - startDate;
       const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
-      document.getElementById("contador").innerText = `${dias} dias`;
-    };
+      document.getElementById("contador").innerText = ${dias} dias;
+    }
     atualizaContador();
-    setInterval(atualizaContador, 1000);
 
-    // Lógica para adicionar eventos à linha do tempo
+    // Adicionar eventos na linha do tempo
     const timelineEvents = [];
     const addEventButton = document.getElementById("add-event-btn");
 
-    const addEvent = () => {
+    function addEvent() {
       const date = document.getElementById("event-date").value;
       const title = document.getElementById("event-title").value;
       const description = document.getElementById("event-description").value;
@@ -161,9 +160,9 @@
       } else {
         alert("Por favor, preencha todos os campos antes de adicionar o evento.");
       }
-    };
+    }
 
-    const renderTimeline = () => {
+    function renderTimeline() {
       const timelineDiv = document.getElementById("timeline-events");
       timelineDiv.innerHTML = ""; // Limpar a linha do tempo antes de adicionar novos eventos
       timelineEvents.forEach(event => {
@@ -175,7 +174,7 @@
         `;
         timelineDiv.appendChild(eventDiv);
       });
-    };
+    }
 
     addEventButton.addEventListener("click", addEvent);
   </script>
