@@ -15,107 +15,163 @@
       margin-top: 50px;
       font-size: 2.5em;
     }
-    .linha-do-tempo {
-      margin: 30px auto;
-      max-width: 800px;
-      position: relative;
-      padding: 20px;
+    p {
+      font-size: 1.2em;
     }
-    .evento {
-      margin-bottom: 20px;
-      padding: 10px;
-      background-color: #fff;
-      border-left: 4px solid #ff007f;
-      position: relative;
+    .texto-especial {
+      font-size: 1.5em;
+      margin: 20px;
+      color: #d23669;
+      font-style: italic;
+    }
+    .contador {
+      font-size: 2em;
+      margin: 20px;
+      font-weight: bold;
+    }
+    .fotos {
+      margin: 20px;
+    }
+    .fotos img {
+      width: 300px;
+      height: auto;
+      margin: 10px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    }
+    footer {
+      margin-top: 50px;
+      font-size: 0.9em;
+      color: #555;
+    }
+    .timeline {
+      margin: 40px auto;
+      max-width: 600px;
       text-align: left;
+      border-left: 2px solid #ff007f;
+      padding-left: 20px;
     }
-    .evento::before {
-      content: "";
-      position: absolute;
-      top: 10px;
-      left: -10px;
-      width: 20px;
-      height: 20px;
-      background-color: #ff007f;
-      border-radius: 50%;
+    .timeline-event {
+      margin-bottom: 20px;
     }
-    .evento h3 {
+    .timeline-event h3 {
       margin: 0;
       font-size: 1.2em;
       color: #d23669;
     }
-    .evento p {
-      margin: 5px 0 0 0;
+    .timeline-event p {
+      margin: 5px 0;
       font-size: 1em;
       color: #555;
     }
-    .add-evento {
-      margin: 20px 0;
+    .add-event {
+      margin: 40px auto;
+      max-width: 600px;
+      text-align: left;
+      background: #ffeaf0;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
     }
-    .add-evento input, .add-evento button {
+    .add-event label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .add-event input,
+    .add-event textarea,
+    .add-event button {
+      width: 100%;
+      margin-bottom: 15px;
       padding: 10px;
       font-size: 1em;
-      margin: 5px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .add-event button {
+      background-color: #ff007f;
+      color: white;
+      cursor: pointer;
+    }
+    .add-event button:hover {
+      background-color: #d23669;
     }
   </style>
 </head>
 <body>
-  <h1>❤️ Nosso Amor ❤️</h1>
-  <div class="linha-do-tempo" id="linhaDoTempo">
+  <h1>❤ Nosso Amor ❤</h1>
+  <p class="texto-especial">"Cada dia ao seu lado é um presente que quero guardar para sempre no meu coração."</p>
+  <p>Estamos juntos há:</p>
+  <div class="contador" id="contador"></div>
+  <div class="fotos">
+    <img src="F65C45F2-8E9C-4735-A9DB-B81793FB18F7.jpeg" alt="Foto do casal na praia">
+    <img src="E9A4784E-6978-4C71-AD28-C0E6F0347C52.jpeg" alt="Foto do casal no carro">
+  </div>
+
+  <!-- Linha do tempo -->
+  <div class="timeline">
     <h2>Linha do Tempo</h2>
-    <div class="evento">
-      <h3>19/10/2024 - Início do Namoro</h3>
-      <p>O dia que nosso amor começou oficialmente!</p>
+    <div id="timeline-events">
+      <!-- Eventos adicionados dinamicamente -->
     </div>
   </div>
 
-  <div class="add-evento">
-    <input type="date" id="dataEvento" placeholder="Data do evento">
-    <input type="text" id="tituloEvento" placeholder="Título do evento">
-    <input type="text" id="descricaoEvento" placeholder="Descrição do evento">
-    <button onclick="adicionarEvento()">Adicionar Evento</button>
+  <!-- Formulário para adicionar eventos -->
+  <div class="add-event">
+    <h3>Adicione um evento à linha do tempo</h3>
+    <label for="event-date">Data:</label>
+    <input type="date" id="event-date" required>
+    <label for="event-title">Título:</label>
+    <input type="text" id="event-title" placeholder="Ex: Dia em que nos conhecemos" required>
+    <label for="event-description">Descrição:</label>
+    <textarea id="event-description" rows="3" placeholder="Escreva uma breve descrição..." required></textarea>
+    <button onclick="addEvent()">Adicionar Evento</button>
   </div>
 
+  <footer>Com muito amor, de mim para você! 💖</footer>
+
   <script>
-    // Função para adicionar um novo evento
-    function adicionarEvento() {
-      const data = document.getElementById("dataEvento").value;
-      const titulo = document.getElementById("tituloEvento").value;
-      const descricao = document.getElementById("descricaoEvento").value;
+    // Contador de tempo juntos
+    const startDate = new Date("2024-10-19");
+    const atualizaContador = () => {
+      const hoje = new Date();
+      const diff = hoje - startDate;
+      const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+      document.getElementById("contador").innerText = ${dias} dias;
+    };
+    atualizaContador();
+    setInterval(atualizaContador, 1000);
 
-      if (data && titulo && descricao) {
-        const linhaDoTempo = document.getElementById("linhaDoTempo");
-        
-        // Cria o contêiner do evento
-        const evento = document.createElement("div");
-        evento.classList.add("evento");
-        evento.innerHTML = `
-          <h3>${data} - ${titulo}</h3>
-          <p>${descricao}</p>
-        `;
-        
-        // Insere o evento na posição correta com base na data
-        const eventosExistentes = [...linhaDoTempo.querySelectorAll(".evento")];
-        let inserido = false;
+    // Adicionar eventos à linha do tempo
+    const timelineEvents = [];
+    const addEvent = () => {
+      const date = document.getElementById("event-date").value;
+      const title = document.getElementById("event-title").value;
+      const description = document.getElementById("event-description").value;
 
-        eventosExistentes.forEach((e, index) => {
-          const dataExistente = new Date(e.querySelector("h3").textContent.split(" - ")[0]);
-          if (new Date(data) < dataExistente && !inserido) {
-            linhaDoTempo.insertBefore(evento, eventosExistentes[index]);
-            inserido = true;
-          }
-        });
-
-        if (!inserido) linhaDoTempo.appendChild(evento);
-
-        // Limpa os campos do formulário
-        document.getElementById("dataEvento").value = "";
-        document.getElementById("tituloEvento").value = "";
-        document.getElementById("descricaoEvento").value = "";
-      } else {
-        alert("Por favor, preencha todos os campos.");
+      if (date && title && description) {
+        timelineEvents.push({ date: new Date(date), title, description });
+        timelineEvents.sort((a, b) => a.date - b.date); // Ordenar por data
+        renderTimeline();
+        document.getElementById("event-date").value = "";
+        document.getElementById("event-title").value = "";
+        document.getElementById("event-description").value = "";
       }
-    }
+    };
+
+    const renderTimeline = () => {
+      const timelineDiv = document.getElementById("timeline-events");
+      timelineDiv.innerHTML = "";
+      timelineEvents.forEach(event => {
+        const eventDiv = document.createElement("div");
+        eventDiv.classList.add("timeline-event");
+        eventDiv.innerHTML = `
+          <h3>${event.title} <small>(${event.date.toLocaleDateString()})</small></h3>
+          <p>${event.description}</p>
+        `;
+        timelineDiv.appendChild(eventDiv);
+      });
+    };
   </script>
 </body>
 </html>
