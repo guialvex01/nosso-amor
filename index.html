@@ -208,7 +208,7 @@
     const renderTimeline = (events) => {
       const timelineDiv = document.getElementById("timeline-events");
       timelineDiv.innerHTML = ""; // Limpar antes de renderizar
-      events.forEach((event, eventId) => {
+      events.forEach(([eventId, event]) => {
         const eventDiv = document.createElement("div");
         eventDiv.classList.add("timeline-event");
         eventDiv.innerHTML = `
