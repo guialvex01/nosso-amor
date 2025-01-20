@@ -40,7 +40,7 @@
     }
     /* Estilos da Linha do Tempo */
     .timeline {
-      background-color: #ffe6f2;  /* Cor de fundo mais suave para a linha do tempo */
+      background-color: #ffe6f2;
       padding: 20px;
       margin: 40px 0;
       border-radius: 10px;
@@ -48,20 +48,35 @@
     }
     .timeline h2 {
       font-size: 2em;
-      color: #ff66b2;  /* Cor do título da linha do tempo */
+      color: #ff66b2;
     }
     .timeline-event {
       padding: 10px;
       margin: 10px 0;
-      background-color: #fce4ec;  /* Cor de fundo para os eventos */
+      background-color: #fce4ec;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
     }
     .timeline-event h3 {
-      color: #d18ec9;  /* Cor do título de cada evento */
+      color: #d18ec9;
     }
     .timeline-event p {
-      color: #d18ec9;  /* Cor da descrição dos eventos */
+      color: #d18ec9;
+    }
+    .timeline-event button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #ff007f;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .timeline-event button:hover {
+      background-color: #e55a94;
     }
     .add-event {
       background-color: #fff;
@@ -108,8 +123,7 @@
 
   <div class="timeline">
     <h2>Linha do Tempo</h2>
-    <div id="timeline-events">
-    </div>
+    <div id="timeline-events"></div>
   </div>
 
   <div class="add-event">
@@ -127,7 +141,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCEtGOJ0Il1C7tXe3CVz4QSvCU7wA_74NI",
@@ -171,24 +185,42 @@
 
     const renderTimeline = (events) => {
       const timelineDiv = document.getElementById("timeline-events");
-      timelineDiv.innerHTML = "";
+      timelineDiv.innerHTML = ""; 
       events.forEach(event => {
         const eventDiv = document.createElement("div");
         eventDiv.classList.add("timeline-event");
+        eventDiv.setAttribute("data-id", event.id);
         eventDiv.innerHTML = `
           <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString()})</small></h3>
           <p>${event.description}</p>
+          <button class="edit-btn">Editar</button>
+          <button class="delete-btn">Excluir</button>
         `;
         timelineDiv.appendChild(eventDiv);
+
+        // Editar evento
+        eventDiv.querySelector(".edit-btn").addEventListener("click", () => {
+          document.getElementById("event-date").value = event.date;
+          document.getElementById("event-title").value = event.title;
+          document.getElementById("event-description").value = event.description;
+          push(timelineRef, { date: event.date, title: event.title, description: event.description });
+        });
+
+        // Excluir evento
+        eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
+          const eventRef = ref(database, `timeline/${event.id}`);
+          remove(eventRef);
+        });
       });
     };
 
     onValue(timelineRef, (snapshot) => {
       const data = snapshot.val();
-      const events = data ? Object.values(data) : [];
+      const events = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
       events.sort((a, b) => new Date(a.date) - new Date(b.date));
       renderTimeline(events);
     });
   </script>
 </body>
 </html>
+
