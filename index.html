@@ -141,7 +141,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCEtGOJ0Il1C7tXe3CVz4QSvCU7wA_74NI",
@@ -174,7 +174,16 @@
       const description = document.getElementById("event-description").value;
 
       if (date && title && description) {
-        push(timelineRef, { date, title, description });
+        // Garantir que a data seja no formato adequado
+        const dateObj = new Date(date);
+        const correctedDate = new Date(dateObj.getUTCFullYear(), dateObj.getUTCMonth(), dateObj.getUTCDate());
+
+        push(timelineRef, { 
+          date: correctedDate.toISOString(),  // Armazenar a data em formato ISO
+          title, 
+          description 
+        });
+        
         document.getElementById("event-date").value = "";
         document.getElementById("event-title").value = "";
         document.getElementById("event-description").value = "";
@@ -194,12 +203,13 @@
           <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString()})</small></h3>
           <p>${event.description}</p>
           <button class="edit-btn">Editar</button>
+          <button class="delete-btn">Excluir</button>
         `;
         timelineDiv.appendChild(eventDiv);
 
         // Editar evento
         eventDiv.querySelector(".edit-btn").addEventListener("click", () => {
-          document.getElementById("event-date").value = event.date;
+          document.getElementById("event-date").value = event.date.split('T')[0]; // Ajuste para formatar a data
           document.getElementById("event-title").value = event.title;
           document.getElementById("event-description").value = event.description;
           
@@ -211,6 +221,12 @@
 
           const eventRef = ref(database, `timeline/${event.id}`);
           update(eventRef, updatedEvent);
+        });
+
+        // Excluir evento
+        eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
+          const eventRef = ref(database, `timeline/${event.id}`);
+          remove(eventRef);
         });
       });
     };
