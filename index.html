@@ -121,7 +121,7 @@
   <script type="module">
     // Importando Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
     // Configuração do Firebase
     const firebaseConfig = {
@@ -198,26 +198,44 @@
       }
     });
 
+    // Função para editar evento no Firebase
+    function editarEvento(eventId, data) {
+      const eventRef = ref(database, `timeline/${eventId}`);
+      update(eventRef, data);
+    }
+
     // Renderizar eventos do Firebase
     const renderTimeline = (events) => {
       const timelineDiv = document.getElementById("timeline-events");
       timelineDiv.innerHTML = ""; // Limpar antes de renderizar
-      events.forEach(event => {
+      events.forEach((event, eventId) => {
         const eventDiv = document.createElement("div");
         eventDiv.classList.add("timeline-event");
         eventDiv.innerHTML = `
           <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString()})</small></h3>
           <p>${event.description}</p>
+          <button onclick="editarEventoPrompt('${eventId}')">Editar</button>
         `;
         timelineDiv.appendChild(eventDiv);
       });
     };
 
+    // Função para editar o evento (prompt de edição)
+    function editarEventoPrompt(eventId) {
+      const date = prompt("Nova Data:");
+      const title = prompt("Novo Título:");
+      const description = prompt("Nova Descrição:");
+
+      if (date && title && description) {
+        editarEvento(eventId, { date, title, description });
+        gerarCoraçosFlutuantes(); // Gerar corações ao editar
+      }
+    }
+
     // Escutando atualizações do Firebase
     onValue(timelineRef, (snapshot) => {
       const data = snapshot.val();
-      const events = data ? Object.values(data) : [];
-      events.sort((a, b) => new Date(a.date) - new Date(b.date)); // Ordenar por data
+      const events = data ? Object.entries(data) : [];
       renderTimeline(events);
     });
   </script>
