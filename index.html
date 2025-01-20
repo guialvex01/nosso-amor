@@ -15,104 +15,106 @@
       margin-top: 50px;
       font-size: 2.5em;
     }
-    p {
+    .linha-do-tempo {
+      margin: 30px auto;
+      max-width: 800px;
+      position: relative;
+      padding: 20px;
+    }
+    .evento {
+      margin-bottom: 20px;
+      padding: 10px;
+      background-color: #fff;
+      border-left: 4px solid #ff007f;
+      position: relative;
+      text-align: left;
+    }
+    .evento::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: -10px;
+      width: 20px;
+      height: 20px;
+      background-color: #ff007f;
+      border-radius: 50%;
+    }
+    .evento h3 {
+      margin: 0;
       font-size: 1.2em;
-    }
-    .texto-especial {
-      font-size: 1.5em;
-      margin: 20px;
       color: #d23669;
-      font-style: italic;
     }
-    .contador {
-      font-size: 2em;
-      margin: 20px;
-      font-weight: bold;
-    }
-    .fotos {
-      margin: 20px;
-    }
-    .fotos img {
-      width: 300px;
-      height: auto;
-      margin: 10px;
-      border-radius: 10px;
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-    }
-    footer {
-      margin-top: 50px;
-      font-size: 0.9em;
+    .evento p {
+      margin: 5px 0 0 0;
+      font-size: 1em;
       color: #555;
     }
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
+    .add-evento {
+      margin: 20px 0;
+    }
+    .add-evento input, .add-evento button {
+      padding: 10px;
+      font-size: 1em;
+      margin: 5px;
     }
   </style>
 </head>
 <body>
   <h1>❤️ Nosso Amor ❤️</h1>
-  <p class="texto-especial">"Cada dia ao seu lado é um presente que quero guardar para sempre no meu coração."</p>
-  <p>Estamos juntos há:</p>
-  <div class="contador" id="contador"></div>
-  <div class="fotos">
-    <img src="F65C45F2-8E9C-4735-A9DB-B81793FB18F7.jpeg" alt="Foto do casal na praia">
-    <img src="E9A4784E-6978-4C71-AD28-C0E6F0347C52.jpeg" alt="Foto do casal no carro">
+  <div class="linha-do-tempo" id="linhaDoTempo">
+    <h2>Linha do Tempo</h2>
+    <div class="evento">
+      <h3>19/10/2024 - Início do Namoro</h3>
+      <p>O dia que nosso amor começou oficialmente!</p>
+    </div>
   </div>
-  <footer>Com muito amor, de mim para você! 💖</footer>
+
+  <div class="add-evento">
+    <input type="date" id="dataEvento" placeholder="Data do evento">
+    <input type="text" id="tituloEvento" placeholder="Título do evento">
+    <input type="text" id="descricaoEvento" placeholder="Descrição do evento">
+    <button onclick="adicionarEvento()">Adicionar Evento</button>
+  </div>
+
   <script>
-    // Define a data de início do namoro
-    const startDate = new Date("2024-10-19");
-    const today = new Date();
+    // Função para adicionar um novo evento
+    function adicionarEvento() {
+      const data = document.getElementById("dataEvento").value;
+      const titulo = document.getElementById("tituloEvento").value;
+      const descricao = document.getElementById("descricaoEvento").value;
 
-    // Calcula o número de dias juntos
-    const timeDifference = today - startDate;
-    const daysTogether = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-    document.getElementById("contador").innerText = daysTogether >= 0 
-      ? `${daysTogether} dias`
-      : "Ainda não começou! ❤️";
+      if (data && titulo && descricao) {
+        const linhaDoTempo = document.getElementById("linhaDoTempo");
+        
+        // Cria o contêiner do evento
+        const evento = document.createElement("div");
+        evento.classList.add("evento");
+        evento.innerHTML = `
+          <h3>${data} - ${titulo}</h3>
+          <p>${descricao}</p>
+        `;
+        
+        // Insere o evento na posição correta com base na data
+        const eventosExistentes = [...linhaDoTempo.querySelectorAll(".evento")];
+        let inserido = false;
 
-    // Verifica se hoje é o dia 19
-    if (today.getDate() === 19) {
-      const monthsDifference = (today.getFullYear() - startDate.getFullYear()) * 12 + (today.getMonth() - startDate.getMonth());
-      const mensagens = {
-        1: "🎉 Parabéns pelo nosso primeiro mês de namoro! Que seja o início de uma linda história juntos. 💖",
-        2: "🎉 Dois meses ao seu lado, e meu coração só tem certeza de uma coisa: quero mais e mais! 💞",
-        3: "🎉 Três meses de amor! Estamos apenas começando a construir algo incrível. Te amo! 💕",
-        4: "🎉 Quatro meses com você é um presente! Que venham muitos mais. ❤",
-        5: "🎉 Cinco meses juntos! Obrigado por me fazer tão feliz. 🌹",
-        6: "🎉 Meio ano de namoro! Cada dia ao seu lado é inesquecível. Amo você! 💘",
-        12: "🎉 Um ano de amor! Obrigado por tornar minha vida mais especial a cada dia. ❤",
-      };
+        eventosExistentes.forEach((e, index) => {
+          const dataExistente = new Date(e.querySelector("h3").textContent.split(" - ")[0]);
+          if (new Date(data) < dataExistente && !inserido) {
+            linhaDoTempo.insertBefore(evento, eventosExistentes[index]);
+            inserido = true;
+          }
+        });
 
-      const mensagemPersonalizada = mensagens[monthsDifference] || "🎉 Mais um mês ao seu lado, e sou grato por cada momento juntos. Te amo! 💖";
+        if (!inserido) linhaDoTempo.appendChild(evento);
 
-    const message = document.createElement("div");
-message.style.position = "fixed";
-message.style.top = "20%";
-message.style.left = "50%";
-message.style.transform = "translate(-50%, -50%)";
-message.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
-message.style.color = "white";
-message.style.padding = "20px";
-message.style.borderRadius = "10px";
-message.style.textAlign = "center";
-message.style.zIndex = "1000";
-message.style.width = "90%"; // Adiciona largura responsiva
-message.style.maxWidth = "400px"; // Limita a largura máxima
-message.style.boxSizing = "border-box"; // Garante que o padding não exceda o tamanho
-message.style.wordWrap = "break-word"; // Ajusta o texto quebrando palavras grandes
-message.style.animation = "fadeIn 1s"; // Efeito de entrada
-message.innerHTML = `
-    <h2>${mensagemPersonalizada}</h2>
-    <button onclick="this.parentElement.style.display='none'" style="margin-top: 10px; padding: 10px 20px; background-color: #ff6f61; border: none; border-radius: 5px; color: white; cursor: pointer;">Fechar</button>
-`;
-document.body.appendChild(message);
-
+        // Limpa os campos do formulário
+        document.getElementById("dataEvento").value = "";
+        document.getElementById("tituloEvento").value = "";
+        document.getElementById("descricaoEvento").value = "";
+      } else {
+        alert("Por favor, preencha todos os campos.");
+      }
     }
   </script>
 </body>
