@@ -124,7 +124,7 @@
 
     .coracao {
       position: fixed;
-      font-size: 30px;
+      font-size: 40px;
       color: #ff66b2;
       animation: subirCoracoes 2s ease-in-out forwards;
       z-index: 1000;
@@ -213,6 +213,7 @@
     function addHeartAnimation() {
       const coracao = document.createElement("div");
       coracao.classList.add("coracao");
+      coracao.innerText = "❤️";
       document.body.appendChild(coracao);
 
       // Remove o coração após a animação
@@ -250,4 +251,3 @@
   </script>
 </body>
 </html>
-
