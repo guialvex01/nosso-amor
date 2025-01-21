@@ -109,6 +109,34 @@
       margin-top: 50px;
       color: #ff3399;
     }
+
+    /* Animação de corações */
+    @keyframes subirCoracoes {
+      0% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-100px);
+      }
+    }
+
+    .coracao {
+      position: fixed;
+      font-size: 30px;
+      color: #ff66b2;
+      animation: subirCoracoes 2s ease-in-out forwards;
+      z-index: 1000;
+    }
+
+    .coracao::after {
+      content: "❤️";
+      animation: subirCoracoes 2s ease-in-out forwards;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
   </style>
 </head>
 <body>
@@ -175,13 +203,28 @@
 
       if (date && title && description) {
         push(timelineRef, { date, title, description });
+
         document.getElementById("event-date").value = "";
         document.getElementById("event-title").value = "";
         document.getElementById("event-description").value = "";
+
+        // Animação de corações
+        addHeartAnimation();
       } else {
         alert("Preencha todos os campos.");
       }
     });
+
+    function addHeartAnimation() {
+      const coracao = document.createElement("div");
+      coracao.classList.add("coracao");
+      document.body.appendChild(coracao);
+
+      // Remove o coração após a animação
+      setTimeout(() => {
+        coracao.remove();
+      }, 2000); // Tempo da animação (2s)
+    }
 
     const renderTimeline = (events) => {
       const timelineDiv = document.getElementById("timeline-events");
@@ -193,40 +236,21 @@
         eventDiv.innerHTML = `
           <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString()})</small></h3>
           <p>${event.description}</p>
-          <button class="edit-btn">Editar</button>
           <button class="delete-btn">Excluir</button>
         `;
-        timelineDiv.appendChild(eventDiv);
-
-        // Editar evento
-        eventDiv.querySelector(".edit-btn").addEventListener("click", () => {
-          document.getElementById("event-date").value = event.date;
-          document.getElementById("event-title").value = event.title;
-          document.getElementById("event-description").value = event.description;
-
-          const updatedEvent = {
-            date: document.getElementById("event-date").value,
-            title: document.getElementById("event-title").value,
-            description: document.getElementById("event-description").value
-          };
-
-          const eventRef = ref(database, `timeline/${event.id}`);
-          update(eventRef, updatedEvent);
-        });
-
-        // Excluir evento
         eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
-          const eventRef = ref(database, `timeline/${event.id}`);
-          remove(eventRef);
+          remove(ref(database, `timeline/${event.id}`));
         });
+        timelineDiv.appendChild(eventDiv);
       });
     };
 
-    onValue(timelineRef, (snapshot) => {
+    onValue(timelineRef, snapshot => {
       const data = snapshot.val();
-      const events = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-      events.sort((a, b) => new Date(a.date) - new Date(b.date));
-      renderTimeline(events);
+      if (data) {
+        const events = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+        renderTimeline(events);
+      }
     });
   </script>
 </body>
