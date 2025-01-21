@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nosso Amor</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -21,7 +20,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 20px;
+      gap: 10px;
     }
     h1 span {
       font-size: 1.5em;
@@ -36,6 +35,15 @@
       font-size: 2em;
       margin: 20px 0;
       color: #ff007f;
+    }
+    .fotos img {
+      width: 45%;
+      border-radius: 15px;
+      margin: 10px;
+      transition: transform 0.3s;
+    }
+    .fotos img:hover {
+      transform: scale(1.05);
     }
     .timeline {
       background-color: #cce7ff;
@@ -54,9 +62,27 @@
       background-color: #e6f2ff;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
     }
-    .timeline-event h3, .timeline-event p {
+    .timeline-event h3 {
       color: #d18ec9;
+    }
+    .timeline-event p {
+      color: #d18ec9;
+    }
+    .timeline-event button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #ff007f;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .timeline-event button:hover {
+      background-color: #e55a94;
     }
     .add-event {
       background-color: #fff;
@@ -81,11 +107,13 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    #map {
-      width: 100%;
-      height: 400px;
-      margin: 20px 0;
-      border-radius: 10px;
+    .add-event button:hover {
+      background-color: #e55a94;
+    }
+    footer {
+      font-size: 1.2em;
+      margin-top: 50px;
+      color: #ff3399;
     }
   </style>
 </head>
@@ -96,6 +124,10 @@
   <p class="texto-especial">"Cada dia ao seu lado é um presente que quero guardar para sempre no meu coração."</p>
   <p>Estamos juntos há:</p>
   <div class="contador" id="contador"></div>
+  <div class="fotos">
+    <img src="F65C45F2-8E9C-4735-A9DB-B81793FB18F7.jpeg" alt="Foto do casal na praia">
+    <img src="E9A4784E-6978-4C71-AD28-C0E6F0347C52.jpeg" alt="Foto do casal no carro">
+  </div>
 
   <div class="timeline">
     <h2>Linha do Tempo</h2>
@@ -113,38 +145,27 @@
     <button id="add-event-btn">Adicionar Evento</button>
   </div>
 
-  <h2>Mapa de Viagens</h2>
-  <div id="map"></div>
-  <div class="add-event">
-    <h3>Adicione um local ao mapa</h3>
-    <label for="location-name">Nome do local:</label>
-    <input type="text" id="location-name" placeholder="Ex: Paris, França" required>
-    <label for="location-lat">Latitude:</label>
-    <input type="number" id="location-lat" placeholder="Ex: 48.8566" step="any" required>
-    <label for="location-lng">Longitude:</label>
-    <input type="number" id="location-lng" placeholder="Ex: 2.3522" step="any" required>
-    <button id="add-location-btn">Adicionar Local</button>
-  </div>
+  <footer>Com muito amor, de mim para você! 💖</footer>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js"></script>
-  <script>
-    // Firebase Config
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+
     const firebaseConfig = {
-      apiKey: "SUA_API_KEY",
-      authDomain: "SUA_AUTH_DOMAIN",
-      databaseURL: "SUA_DATABASE_URL",
-      projectId: "SEU_PROJECT_ID",
-      storageBucket: "SEU_STORAGE_BUCKET",
-      messagingSenderId: "SEU_SENDER_ID",
-      appId: "SEU_APP_ID",
+      apiKey: "AIzaSyCEtGOJ0Il1C7tXe3CVz4QSvCU7wA_74NI",
+      authDomain: "nosso-amor-1f3e8.firebaseapp.com",
+      projectId: "nosso-amor-1f3e8",
+      storageBucket: "nosso-amor-1f3e8.appspot.com",
+      messagingSenderId: "380207057106",
+      appId: "1:380207057106:web:f2150d96af4018bc7d050b",
+      measurementId: "G-Z3DHV04CHB",
+      databaseURL: "https://nosso-amor-1f3e8-default-rtdb.firebaseio.com"
     };
 
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.getDatabase(app);
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
 
-    const startDate = new Date("2024-10-19");
+    const startDate = new Date("2024-10-19T00:00:00-03:00");
 
     function atualizaContador() {
       const hoje = new Date();
@@ -154,85 +175,51 @@
     }
     atualizaContador();
 
-    const timelineRef = firebase.ref(db, "timeline");
+    const timelineRef = ref(database, "timeline");
 
-    document.getElementById("add-event-btn").addEventListener("click", () => {/** Adicionar timeline */});
-
-    /** Map */ const refconst mapRef = firebase.ref(db, "locations");
-
-    // Inicializa o mapa
-    const map = L.map("map").setView([0, 0], 2);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
-
-    // Carrega os locais do Firebase para o mapa
-    firebase.onValue(mapRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        Object.values(data).forEach((location) => {
-          L.marker([location.lat, location.lng])
-            .addTo(map)
-            .bindPopup(`<b>${location.name}</b>`);
-        });
-      }
-    });
-
-    // Adiciona um local ao mapa
-    document.getElementById("add-location-btn").addEventListener("click", () => {
-      const name = document.getElementById("location-name").value;
-      const lat = parseFloat(document.getElementById("location-lat").value);
-      const lng = parseFloat(document.getElementById("location-lng").value);
-
-      if (name && lat && lng) {
-        const newLocation = firebase.push(mapRef);
-        firebase.set(newLocation, { name, lat, lng });
-
-        document.getElementById("location-name").value = "";
-        document.getElementById("location-lat").value = "";
-        document.getElementById("location-lng").value = "";
-        alert("Local adicionado com sucesso!");
-      } else {
-        alert("Por favor, preencha todos os campos.");
-      }
-    });
-
-    // Carrega os eventos da linha do tempo do Firebase
-    firebase.onValue(timelineRef, (snapshot) => {
-      const data = snapshot.val();
-      const timelineContainer = document.getElementById("timeline-events");
-      timelineContainer.innerHTML = ""; // Limpa a linha do tempo
-      if (data) {
-        Object.values(data).forEach((event) => {
-          const eventElement = document.createElement("div");
-          eventElement.classList.add("timeline-event");
-          eventElement.innerHTML = `
-            <h3>${event.title}</h3>
-            <p><b>Data:</b> ${event.date}</p>
-            <p>${event.description}</p>
-          `;
-          timelineContainer.appendChild(eventElement);
-        });
-      }
-    });
-
-    // Adiciona um evento à linha do tempo
     document.getElementById("add-event-btn").addEventListener("click", () => {
       const date = document.getElementById("event-date").value;
       const title = document.getElementById("event-title").value;
       const description = document.getElementById("event-description").value;
 
       if (date && title && description) {
-        const newEvent = firebase.push(timelineRef);
-        firebase.set(newEvent, { date, title, description });
+        const adjustedDate = new Date(date + "T00:00:00-03:00");
+        push(timelineRef, { date: adjustedDate.toISOString(), title, description });
 
         document.getElementById("event-date").value = "";
         document.getElementById("event-title").value = "";
         document.getElementById("event-description").value = "";
-        alert("Evento adicionado com sucesso!");
       } else {
-        alert("Por favor, preencha todos os campos.");
+        alert("Preencha todos os campos.");
       }
+    });
+
+    const renderTimeline = (events) => {
+      const timelineDiv = document.getElementById("timeline-events");
+      timelineDiv.innerHTML = ""; 
+      events.forEach(event => {
+        const eventDiv = document.createElement("div");
+        eventDiv.classList.add("timeline-event");
+        eventDiv.setAttribute("data-id", event.id);
+        eventDiv.innerHTML = `
+          <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString("pt-BR")})</small></h3>
+          <p>${event.description}</p>
+          <button class="delete-btn">Excluir</button>
+        `;
+        timelineDiv.appendChild(eventDiv);
+
+        eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
+          const eventRef = ref(database, `timeline/${event.id}`);
+          remove(eventRef);
+        });
+      });
+    };
+
+    onValue(timelineRef, (snapshot) => {
+      const data = snapshot.val();
+      const events = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+      events.sort((a, b) => new Date(a.date) - new Date(b.date));
+      renderTimeline(events);
     });
   </script>
 </body>
