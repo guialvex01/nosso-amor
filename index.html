@@ -37,15 +37,6 @@
       margin: 20px 0;
       color: #ff007f;
     }
-    .fotos img {
-      width: 45%;
-      border-radius: 15px;
-      margin: 10px;
-      transition: transform 0.3s;
-    }
-    .fotos img:hover {
-      transform: scale(1.05);
-    }
     .timeline {
       background-color: #cce7ff;
       padding: 20px;
@@ -63,27 +54,9 @@
       background-color: #e6f2ff;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      position: relative;
     }
-    .timeline-event h3 {
+    .timeline-event h3, .timeline-event p {
       color: #d18ec9;
-    }
-    .timeline-event p {
-      color: #d18ec9;
-    }
-    .timeline-event button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: #ff007f;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .timeline-event button:hover {
-      background-color: #e55a94;
     }
     .add-event {
       background-color: #fff;
@@ -108,14 +81,6 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    .add-event button:hover {
-      background-color: #e55a94;
-    }
-    footer {
-      font-size: 1.2em;
-      margin-top: 50px;
-      color: #ff3399;
-    }
     #map {
       width: 100%;
       height: 400px;
@@ -131,10 +96,6 @@
   <p class="texto-especial">"Cada dia ao seu lado é um presente que quero guardar para sempre no meu coração."</p>
   <p>Estamos juntos há:</p>
   <div class="contador" id="contador"></div>
-  <div class="fotos">
-    <img src="F65C45F2-8E9C-4735-A9DB-B81793FB18F7.jpeg" alt="Foto do casal na praia">
-    <img src="E9A4784E-6978-4C71-AD28-C0E6F0347C52.jpeg" alt="Foto do casal no carro">
-  </div>
 
   <div class="timeline">
     <h2>Linha do Tempo</h2>
@@ -165,27 +126,26 @@
     <button id="add-location-btn">Adicionar Local</button>
   </div>
 
-  <footer>Com muito amor, de mim para você! 💖</footer>
-
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module">
-    // Configuração do Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js"></script>
+  <script>
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "SUA_API_KEY",
-      authDomain: "SEU_AUTH_DOMAIN",
+      authDomain: "SUA_AUTH_DOMAIN",
+      databaseURL: "SUA_DATABASE_URL",
       projectId: "SEU_PROJECT_ID",
-      storageBucket: "SEU_BUCKET",
+      storageBucket: "SEU_STORAGE_BUCKET",
       messagingSenderId: "SEU_SENDER_ID",
-      appId: "SEU_APP_ID"
+      appId: "SEU_APP_ID",
     };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
 
-    // Contador de dias
-    const startDate = new Date("2024-10-19T00:00:00-03:00");
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.getDatabase(app);
+
+    const startDate = new Date("2024-10-19");
+
     function atualizaContador() {
       const hoje = new Date();
       const diff = hoje - startDate;
@@ -194,57 +154,84 @@
     }
     atualizaContador();
 
-    // Linha do Tempo
-    async function carregarEventos() {
-      const eventosSnapshot = await getDocs(collection(db, "eventos"));
-      const timelineEvents = document.getElementById("timeline-events");
-      timelineEvents.innerHTML = "";
-      eventosSnapshot.forEach(doc => {
-        const evento = doc.data();
-        const div = document.createElement("div");
-        div.className = "timeline-event";
-        div.innerHTML = `<h3>${evento.titulo} (${evento.data})</h3><p>${evento.descricao}</p>`;
-        timelineEvents.appendChild(div);
-      });
-    }
-    carregarEventos();
+    const timelineRef = firebase.ref(db, "timeline");
 
-    document.getElementById("add-event-btn").addEventListener("click", async () => {
-      const data = document.getElementById("event-date").value;
-      const titulo = document.getElementById("event-title").value;
-      const descricao = document.getElementById("event-description").value;
+    document.getElementById("add-event-btn").addEventListener("click", () => {/** Adicionar timeline */});
 
-      if (data && titulo && descricao) {
-        await addDoc(collection(db, "eventos"), { data, titulo, descricao });
-        carregarEventos();
-      } else {
-        alert("Preencha todos os campos!");
+    /** Map */ const refconst mapRef = firebase.ref(db, "locations");
+
+    // Inicializa o mapa
+    const map = L.map("map").setView([0, 0], 2);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+    // Carrega os locais do Firebase para o mapa
+    firebase.onValue(mapRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        Object.values(data).forEach((location) => {
+          L.marker([location.lat, location.lng])
+            .addTo(map)
+            .bindPopup(`<b>${location.name}</b>`);
+        });
       }
     });
 
-    // Mapa e Locais
-    const map = L.map('map').setView([0, 0], 2);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-    async function carregarLocais() {
-      const locaisSnapshot = await getDocs(collection(db, "locais"));
-      locaisSnapshot.forEach(doc => {
-        const local = doc.data();
-        L.marker([local.lat, local.lng]).addTo(map).bindPopup(`<b>${local.nome}</b>`);
-      });
-    }
-    carregarLocais();
-
-    document.getElementById("add-location-btn").addEventListener("click", async () => {
-      const nome = document.getElementById("location-name").value;
+    // Adiciona um local ao mapa
+    document.getElementById("add-location-btn").addEventListener("click", () => {
+      const name = document.getElementById("location-name").value;
       const lat = parseFloat(document.getElementById("location-lat").value);
       const lng = parseFloat(document.getElementById("location-lng").value);
 
-      if (nome && !isNaN(lat) && !isNaN(lng)) {
-        await addDoc(collection(db, "locais"), { nome, lat, lng });
-        carregarLocais();
+      if (name && lat && lng) {
+        const newLocation = firebase.push(mapRef);
+        firebase.set(newLocation, { name, lat, lng });
+
+        document.getElementById("location-name").value = "";
+        document.getElementById("location-lat").value = "";
+        document.getElementById("location-lng").value = "";
+        alert("Local adicionado com sucesso!");
       } else {
-        alert("Preencha todos os campos corretamente.");
+        alert("Por favor, preencha todos os campos.");
+      }
+    });
+
+    // Carrega os eventos da linha do tempo do Firebase
+    firebase.onValue(timelineRef, (snapshot) => {
+      const data = snapshot.val();
+      const timelineContainer = document.getElementById("timeline-events");
+      timelineContainer.innerHTML = ""; // Limpa a linha do tempo
+      if (data) {
+        Object.values(data).forEach((event) => {
+          const eventElement = document.createElement("div");
+          eventElement.classList.add("timeline-event");
+          eventElement.innerHTML = `
+            <h3>${event.title}</h3>
+            <p><b>Data:</b> ${event.date}</p>
+            <p>${event.description}</p>
+          `;
+          timelineContainer.appendChild(eventElement);
+        });
+      }
+    });
+
+    // Adiciona um evento à linha do tempo
+    document.getElementById("add-event-btn").addEventListener("click", () => {
+      const date = document.getElementById("event-date").value;
+      const title = document.getElementById("event-title").value;
+      const description = document.getElementById("event-description").value;
+
+      if (date && title && description) {
+        const newEvent = firebase.push(timelineRef);
+        firebase.set(newEvent, { date, title, description });
+
+        document.getElementById("event-date").value = "";
+        document.getElementById("event-title").value = "";
+        document.getElementById("event-description").value = "";
+        alert("Evento adicionado com sucesso!");
+      } else {
+        alert("Por favor, preencha todos os campos.");
       }
     });
   </script>
