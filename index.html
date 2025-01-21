@@ -157,7 +157,7 @@
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
 
-    // Ajustando a data de início para considerar o fuso horário de Brasília (UTC-3)
+    // Ajuste para o fuso horário local (Brasil)
     const startDate = new Date("2024-10-19T00:00:00-03:00");
 
     function atualizaContador() {
@@ -176,7 +176,10 @@
       const description = document.getElementById("event-description").value;
 
       if (date && title && description) {
-        push(timelineRef, { date, title, description });
+        // Corrigir a data ao adicionar o evento, ajustando o fuso horário
+        const adjustedDate = new Date(date + "T00:00:00-03:00");
+        push(timelineRef, { date: adjustedDate.toISOString(), title, description });
+
         document.getElementById("event-date").value = "";
         document.getElementById("event-title").value = "";
         document.getElementById("event-description").value = "";
