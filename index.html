@@ -158,11 +158,12 @@
     const database = getDatabase(app);
 
     const startDate = new Date("2024-10-19");
+    
     function atualizaContador() {
       const hoje = new Date();
       const diff = hoje - startDate;
       const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
-      document.getElementById("contador").innerText = ${dias} dias;
+      document.getElementById("contador").innerText = `${dias} dias`;
     }
     atualizaContador();
 
@@ -209,7 +210,7 @@
             description: document.getElementById("event-description").value
           };
 
-          const eventRef = ref(database, timeline/${event.id});
+          const eventRef = ref(database, `timeline/${event.id}`);
           update(eventRef, updatedEvent);
         });
       });
