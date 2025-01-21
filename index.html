@@ -141,7 +141,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCEtGOJ0Il1C7tXe3CVz4QSvCU7wA_74NI",
@@ -185,7 +185,7 @@
 
     const renderTimeline = (events) => {
       const timelineDiv = document.getElementById("timeline-events");
-      timelineDiv.innerHTML = ""; 
+      timelineDiv.innerHTML = "";
       events.forEach(event => {
         const eventDiv = document.createElement("div");
         eventDiv.classList.add("timeline-event");
@@ -194,6 +194,7 @@
           <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString()})</small></h3>
           <p>${event.description}</p>
           <button class="edit-btn">Editar</button>
+          <button class="delete-btn">Excluir</button>
         `;
         timelineDiv.appendChild(eventDiv);
 
@@ -202,7 +203,7 @@
           document.getElementById("event-date").value = event.date;
           document.getElementById("event-title").value = event.title;
           document.getElementById("event-description").value = event.description;
-          
+
           const updatedEvent = {
             date: document.getElementById("event-date").value,
             title: document.getElementById("event-title").value,
@@ -211,6 +212,12 @@
 
           const eventRef = ref(database, `timeline/${event.id}`);
           update(eventRef, updatedEvent);
+        });
+
+        // Excluir evento
+        eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
+          const eventRef = ref(database, `timeline/${event.id}`);
+          remove(eventRef);
         });
       });
     };
@@ -224,4 +231,3 @@
   </script>
 </body>
 </html>
-
