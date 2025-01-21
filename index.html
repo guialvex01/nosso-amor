@@ -23,52 +23,162 @@
       align-items: center;
       gap: 20px;
     }
+    h1 span {
+      font-size: 1.5em;
+    }
+    .texto-especial {
+      font-size: 1.3em;
+      font-style: italic;
+      margin: 20px 0;
+      color: #ff3399;
+    }
+    .contador {
+      font-size: 2em;
+      margin: 20px 0;
+      color: #ff007f;
+    }
+    .fotos img {
+      width: 45%;
+      border-radius: 15px;
+      margin: 10px;
+      transition: transform 0.3s;
+    }
+    .fotos img:hover {
+      transform: scale(1.05);
+    }
+    .timeline {
+      background-color: #cce7ff;
+      padding: 20px;
+      margin: 40px 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .timeline h2 {
+      font-size: 2em;
+      color: #ff66b2;
+    }
+    .timeline-event {
+      padding: 10px;
+      margin: 10px 0;
+      background-color: #e6f2ff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    .timeline-event h3 {
+      color: #d18ec9;
+    }
+    .timeline-event p {
+      color: #d18ec9;
+    }
+    .timeline-event button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #ff007f;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .timeline-event button:hover {
+      background-color: #e55a94;
+    }
+    .add-event {
+      background-color: #fff;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .add-event input, .add-event textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 1em;
+    }
+    .add-event button {
+      padding: 10px 20px;
+      background-color: #ff66b2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .add-event button:hover {
+      background-color: #e55a94;
+    }
+    footer {
+      font-size: 1.2em;
+      margin-top: 50px;
+      color: #ff3399;
+    }
     #map {
       width: 100%;
       height: 400px;
       margin: 20px 0;
       border-radius: 10px;
     }
-    .add-location {
-      background-color: #fff;
-      padding: 20px;
-      margin: 20px auto;
-      width: 90%;
-      max-width: 600px;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .add-location input, .add-location button {
-      margin: 10px 0;
-      padding: 10px;
-      width: calc(100% - 20px);
-      font-size: 1em;
-    }
-    .add-location button {
-      background-color: #ff66b2;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    .add-location button:hover {
-      background-color: #e55a94;
-    }
   </style>
 </head>
 <body>
-  <h1>Mapa de Viagens</h1>
+  <h1>
+    <span>❤</span> Nosso Amor <span>❤</span>
+  </h1>
+  <p class="texto-especial">"Cada dia ao seu lado é um presente que quero guardar para sempre no meu coração."</p>
+  <p>Estamos juntos há:</p>
+  <div class="contador" id="contador"></div>
+  <div class="fotos">
+    <img src="F65C45F2-8E9C-4735-A9DB-B81793FB18F7.jpeg" alt="Foto do casal na praia">
+    <img src="E9A4784E-6978-4C71-AD28-C0E6F0347C52.jpeg" alt="Foto do casal no carro">
+  </div>
+
+  <div class="timeline">
+    <h2>Linha do Tempo</h2>
+    <div id="timeline-events"></div>
+  </div>
+
+  <div class="add-event">
+    <h3>Adicione um evento à linha do tempo</h3>
+    <label for="event-date">Data:</label>
+    <input type="date" id="event-date" required>
+    <label for="event-title">Título:</label>
+    <input type="text" id="event-title" placeholder="Ex: Dia em que nos conhecemos" required>
+    <label for="event-description">Descrição:</label>
+    <textarea id="event-description" rows="3" placeholder="Escreva uma breve descrição..." required></textarea>
+    <button id="add-event-btn">Adicionar Evento</button>
+  </div>
+
+  <h2>Mapa de Viagens</h2>
   <div id="map"></div>
-  <div class="add-location">
+  <div class="add-event">
     <h3>Adicione um local ao mapa</h3>
-    <input type="text" id="location-name" placeholder="Nome do local (ex: Paris, França)" required />
-    <input type="number" id="location-lat" placeholder="Latitude (ex: 48.8566)" step="any" required />
-    <input type="number" id="location-lng" placeholder="Longitude (ex: 2.3522)" step="any" required />
+    <label for="location-name">Nome do local:</label>
+    <input type="text" id="location-name" placeholder="Ex: Paris, França" required>
+    <label for="location-lat">Latitude:</label>
+    <input type="number" id="location-lat" placeholder="Ex: 48.8566" step="any" required>
+    <label for="location-lng">Longitude:</label>
+    <input type="number" id="location-lng" placeholder="Ex: 2.3522" step="any" required>
     <button id="add-location-btn">Adicionar Local</button>
   </div>
 
+  <footer>Com muito amor, de mim para você! 💖</footer>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // Inicialização do mapa com Leaflet
+    const startDate = new Date("2024-10-19T00:00:00-03:00");
+
+    function atualizaContador() {
+      const hoje = new Date();
+      const diff = hoje - startDate;
+      const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+      document.getElementById("contador").innerText = `${dias} dias`;
+    }
+    atualizaContador();
+
     const map = L.map('map').setView([0, 0], 2); // Centralizado no mundo
 
     // Camada do mapa com OpenStreetMap
@@ -77,16 +187,13 @@
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Array para armazenar marcadores
     const markers = [];
 
-    // Função para adicionar marcadores no mapa
     const addMarker = (name, lat, lng) => {
       const marker = L.marker([lat, lng]).addTo(map).bindPopup(`<b>${name}</b>`);
       markers.push(marker);
     };
 
-    // Evento de clique no botão "Adicionar Local"
     document.getElementById('add-location-btn').addEventListener('click', () => {
       const name = document.getElementById('location-name').value;
       const lat = parseFloat(document.getElementById('location-lat').value);
@@ -94,9 +201,8 @@
 
       if (name && !isNaN(lat) && !isNaN(lng)) {
         addMarker(name, lat, lng);
-        map.setView([lat, lng], 10); // Focar no novo local
+        map.setView([lat, lng], 10);
 
-        // Limpar campos do formulário
         document.getElementById('location-name').value = '';
         document.getElementById('location-lat').value = '';
         document.getElementById('location-lng').value = '';
