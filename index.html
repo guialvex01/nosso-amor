@@ -170,28 +170,9 @@
   <footer>Com muito amor, de mim para você! 💖</footer>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js"></script>
   <script>
-    const startDate = new Date("2024-10-19T00:00:00-03:00");
-
-    function atualizaContador() {
-      const hoje = new Date();
-      const diff = hoje - startDate;
-      const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
-      document.getElementById('contador').textContent = `${dias} dias juntos!`;
-    }
-
-    setInterval(atualizaContador, 1000);
-    atualizaContador();
-    
-    const map = L.map('map').setView([51.505, -0.09], 2);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-    function addMarker(name, lat, lng) {
-      L.marker([lat, lng]).addTo(map)
-        .bindPopup(`<b>${name}</b>`)
-        .openPopup();
-    }
-    
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -204,33 +185,61 @@
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    db.collection("locations").get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        addMarker(data.name, data.lat, data.lng);
-      });
-    }).catch((error) => {
-      console.error('Erro ao carregar locais: ', error);
-    });
+    const startDate = new Date("2024-10-19T00:00:00-03:00");
 
-    document.getElementById('add-location-btn').addEventListener('click', () => {
+    function atualizaContador() {
+      const hoje = new Date();
+      const diff = hoje - startDate;
+      const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+      document.getElementById("contador").innerText = `${dias} dias juntos!`;
+    }
+    setInterval(atualizaContador, 1000);
+    atualizaContador();
+
+    const map = L.map('map').setView([51.505, -0.09], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    function addMarker(name, lat, lng) {
+      L.marker([lat, lng]).addTo(map)
+        .bindPopup(`<b>${name}</b>`)
+        .openPopup();
+    }
+
+    async function loadLocations() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "locations"));
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          addMarker(data.name, data.lat, data.lng);
+        });
+      } catch (error) {
+        console.error('Erro ao carregar locais: ', error);
+      }
+    }
+
+    loadLocations();
+
+    document.getElementById('add-location-btn').addEventListener('click', async () => {
       const name = document.getElementById('location-name').value;
       const lat = parseFloat(document.getElementById('location-lat').value);
       const lng = parseFloat(document.getElementById('location-lng').value);
 
       if (name && !isNaN(lat) && !isNaN(lng)) {
-        db.collection("locations").add({
-          name: name,
-          lat: lat,
-          lng: lng
-        }).then(() => {
+        try {
+          await addDoc(collection(db, "locations"), {
+            name: name,
+            lat: lat,
+            lng: lng
+          });
+
           addMarker(name, lat, lng);
+
           document.getElementById('location-name').value = '';
           document.getElementById('location-lat').value = '';
           document.getElementById('location-lng').value = '';
-        }).catch((error) => {
+        } catch (error) {
           alert('Erro ao salvar local: ' + error);
-        });
+        }
       } else {
         alert('Preencha todos os campos corretamente.');
       }
