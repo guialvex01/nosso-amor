@@ -38,42 +38,76 @@
     .fotos img:hover {
       transform: scale(1.05);
     }
-
-    /* Estilos para a animação de corações */
-    @keyframes subirCoracoes {
-      0% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-150px);
-      }
+    /* Estilos da Linha do Tempo */
+    .timeline {
+      background-color: #cce7ff; /* Azul claro */
+      padding: 20px;
+      margin: 40px 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-
-    .coracao {
-      position: fixed;
-      font-size: 40px;
-      color: #ff66b2;
-      animation: subirCoracoes 2s ease-in-out forwards;
-      z-index: 1000;
-      left: 50%;
-      transform: translateX(-50%);
+    .timeline h2 {
+      font-size: 2em;
+      color: #ff66b2; /* Rosa */
     }
-
-    .test-button {
+    .timeline-event {
+      padding: 10px;
+      margin: 10px 0;
+      background-color: #e6f2ff; /* Azul ainda mais suave */
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    .timeline-event h3 {
+      color: #d18ec9;
+    }
+    .timeline-event p {
+      color: #d18ec9;
+    }
+    .timeline-event button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #ff007f;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .timeline-event button:hover {
+      background-color: #e55a94;
+    }
+    .add-event {
+      background-color: #fff;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .add-event input, .add-event textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 1em;
+    }
+    .add-event button {
       padding: 10px 20px;
       background-color: #ff66b2;
       color: white;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 1.2em;
-      margin-top: 20px;
     }
-
-    .test-button:hover {
+    .add-event button:hover {
       background-color: #e55a94;
+    }
+    footer {
+      font-size: 1.2em;
+      margin-top: 50px;
+      color: #ff3399;
     }
   </style>
 </head>
@@ -82,7 +116,11 @@
   <p class="texto-especial">"Cada dia ao seu lado é um presente que quero guardar para sempre no meu coração."</p>
   <p>Estamos juntos há:</p>
   <div class="contador" id="contador"></div>
-  
+  <div class="fotos">
+    <img src="F65C45F2-8E9C-4735-A9DB-B81793FB18F7.jpeg" alt="Foto do casal na praia">
+    <img src="E9A4784E-6978-4C71-AD28-C0E6F0347C52.jpeg" alt="Foto do casal no carro">
+  </div>
+
   <div class="timeline">
     <h2>Linha do Tempo</h2>
     <div id="timeline-events"></div>
@@ -98,9 +136,6 @@
     <textarea id="event-description" rows="3" placeholder="Escreva uma breve descrição..." required></textarea>
     <button id="add-event-btn">Adicionar Evento</button>
   </div>
-
-  <!-- Botão para testar a animação do coração -->
-  <button class="test-button" id="test-heart">Testar Animação de Coração</button>
 
   <footer>Com muito amor, de mim para você! 💖</footer>
 
@@ -122,12 +157,14 @@
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
 
-    const startDate = new Date("2024-10-19");
+    // Ajustando a data de início para considerar o fuso horário de Brasília (UTC-3)
+    const startDate = new Date("2024-10-19T00:00:00-03:00");
+
     function atualizaContador() {
       const hoje = new Date();
       const diff = hoje - startDate;
       const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
-      document.getElementById("contador").innerText = `${dias} dias`;
+      document.getElementById("contador").innerText = ${dias} dias;
     }
     atualizaContador();
 
@@ -140,39 +177,17 @@
 
       if (date && title && description) {
         push(timelineRef, { date, title, description });
-
         document.getElementById("event-date").value = "";
         document.getElementById("event-title").value = "";
         document.getElementById("event-description").value = "";
-
-        // Chama a função para adicionar animação de corações
-        addHeartAnimation();
       } else {
         alert("Preencha todos os campos.");
       }
     });
 
-    // Função que cria a animação do coração
-    function addHeartAnimation() {
-      const coracao = document.createElement("div");
-      coracao.classList.add("coracao");
-      coracao.innerText = "❤️";
-      document.body.appendChild(coracao);
-
-      // Remove o coração após a animação
-      setTimeout(() => {
-        coracao.remove();
-      }, 2000); // O tempo da animação (2 segundos)
-    }
-
-    // Teste com botão
-    document.getElementById("test-heart").addEventListener("click", () => {
-      addHeartAnimation();
-    });
-
     const renderTimeline = (events) => {
       const timelineDiv = document.getElementById("timeline-events");
-      timelineDiv.innerHTML = "";
+      timelineDiv.innerHTML = ""; 
       events.forEach(event => {
         const eventDiv = document.createElement("div");
         eventDiv.classList.add("timeline-event");
@@ -182,19 +197,21 @@
           <p>${event.description}</p>
           <button class="delete-btn">Excluir</button>
         `;
-        eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
-          remove(ref(database, `timeline/${event.id}`));
-        });
         timelineDiv.appendChild(eventDiv);
+
+        // Excluir evento
+        eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
+          const eventRef = ref(database, timeline/${event.id});
+          remove(eventRef);
+        });
       });
     };
 
-    onValue(timelineRef, snapshot => {
+    onValue(timelineRef, (snapshot) => {
       const data = snapshot.val();
-      if (data) {
-        const events = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-        renderTimeline(events);
-      }
+      const events = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+      events.sort((a, b) => new Date(a.date) - new Date(b.date));
+      renderTimeline(events);
     });
   </script>
 </body>
