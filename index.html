@@ -170,9 +170,8 @@
   <footer>Com muito amor, de mim para você! 💖</footer>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js"></script>
   <script>
+    // Inicialização do Firebase
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -185,6 +184,7 @@
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // Contador de dias
     const startDate = new Date("2024-10-19T00:00:00-03:00");
 
     function atualizaContador() {
@@ -196,18 +196,21 @@
     setInterval(atualizaContador, 1000);
     atualizaContador();
 
+    // Inicialização do Mapa
     const map = L.map('map').setView([51.505, -0.09], 2);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
+    // Função para adicionar marcador
     function addMarker(name, lat, lng) {
       L.marker([lat, lng]).addTo(map)
         .bindPopup(`<b>${name}</b>`)
         .openPopup();
     }
 
+    // Carregar locais do Firebase
     async function loadLocations() {
       try {
-        const querySnapshot = await getDocs(collection(db, "locations"));
+        const querySnapshot = await firebase.firestore().collection('locations').get();
         querySnapshot.forEach((doc) => {
           const data = doc.data();
           addMarker(data.name, data.lat, data.lng);
@@ -219,6 +222,7 @@
 
     loadLocations();
 
+    // Adicionar local no Firebase
     document.getElementById('add-location-btn').addEventListener('click', async () => {
       const name = document.getElementById('location-name').value;
       const lat = parseFloat(document.getElementById('location-lat').value);
@@ -226,20 +230,19 @@
 
       if (name && !isNaN(lat) && !isNaN(lng)) {
         try {
-          await addDoc(collection(db, "locations"), {
+          await firebase.firestore().collection('locations').add({
             name: name,
             lat: lat,
             lng: lng
           });
-
-          addMarker(name, lat, lng);
-
-          document.getElementById('location-name').value = '';
-          document.getElementById('location-lat').value = '';
-          document.getElementById('location-lng').value = '';
+          addMarker(name, lat, lng);  // Adiciona o marcador no mapa imediatamente
         } catch (error) {
-          alert('Erro ao salvar local: ' + error);
+          console.error('Erro ao adicionar local: ', error);
         }
+
+        document.getElementById('location-name').value = '';
+        document.getElementById('location-lat').value = '';
+        document.getElementById('location-lng').value = '';
       } else {
         alert('Preencha todos os campos corretamente.');
       }
