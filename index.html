@@ -118,7 +118,7 @@
       }
       100% {
         opacity: 0;
-        transform: translateY(-100px);
+        transform: translateY(-150px);
       }
     }
 
@@ -128,11 +128,6 @@
       color: #ff66b2;
       animation: subirCoracoes 2s ease-in-out forwards;
       z-index: 1000;
-    }
-
-    .coracao::after {
-      content: "❤️";
-      position: absolute;
       left: 50%;
       transform: translateX(-50%);
     }
@@ -207,13 +202,14 @@
         document.getElementById("event-title").value = "";
         document.getElementById("event-description").value = "";
 
-        // Animação de corações
+        // Chama a função para adicionar animação de corações
         addHeartAnimation();
       } else {
         alert("Preencha todos os campos.");
       }
     });
 
+    // Função que cria a animação do coração
     function addHeartAnimation() {
       const coracao = document.createElement("div");
       coracao.classList.add("coracao");
@@ -222,7 +218,7 @@
       // Remove o coração após a animação
       setTimeout(() => {
         coracao.remove();
-      }, 2000); // Tempo da animação (2s)
+      }, 2000); // O tempo da animação (2 segundos)
     }
 
     const renderTimeline = (events) => {
@@ -254,3 +250,4 @@
   </script>
 </body>
 </html>
+
