@@ -141,7 +141,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCEtGOJ0Il1C7tXe3CVz4QSvCU7wA_74NI",
@@ -158,13 +158,13 @@
     const database = getDatabase(app);
 
     // Ajustando a data de início para considerar o fuso horário de Brasília (UTC-3)
-    const startDate = new Date("2024-10-19T00:00:00-03:00");
+    const startDate = new Date("2024-10-19T00:00:00-03:00"); // Ajuste para fuso horário
 
     function atualizaContador() {
       const hoje = new Date();
       const diff = hoje - startDate;
       const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
-      document.getElementById("contador").innerText = ${dias} dias;
+      document.getElementById("contador").innerText = `${dias} dias`;
     }
     atualizaContador();
 
@@ -195,14 +195,24 @@
         eventDiv.innerHTML = `
           <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString()})</small></h3>
           <p>${event.description}</p>
-          <button class="delete-btn">Excluir</button>
+          <button class="edit-btn">Editar</button>
         `;
         timelineDiv.appendChild(eventDiv);
 
-        // Excluir evento
-        eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
-          const eventRef = ref(database, timeline/${event.id});
-          remove(eventRef);
+        // Editar evento
+        eventDiv.querySelector(".edit-btn").addEventListener("click", () => {
+          document.getElementById("event-date").value = event.date;
+          document.getElementById("event-title").value = event.title;
+          document.getElementById("event-description").value = event.description;
+          
+          const updatedEvent = {
+            date: document.getElementById("event-date").value,
+            title: document.getElementById("event-title").value,
+            description: document.getElementById("event-description").value
+          };
+
+          const eventRef = ref(database, `timeline/${event.id}`);
+          update(eventRef, updatedEvent);
         });
       });
     };
