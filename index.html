@@ -194,10 +194,10 @@
       document.getElementById("contador").innerText = `${dias} dias juntos!`;
     }
     setInterval(atualizaContador, 1000);
-    atualizaContador();
+    atualizaContador(); // Calcular o contador de dias imediatamente
 
     // Inicialização do Mapa
-    const map = L.map('map').setView([51.505, -0.09], 2);
+    const map = L.map('map').setView([51.505, -0.09], 2); // Ajuste da posição inicial do mapa (latitude, longitude)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
     // Função para adicionar marcador
