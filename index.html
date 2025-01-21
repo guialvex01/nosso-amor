@@ -17,6 +17,13 @@
       margin-top: 50px;
       font-size: 3em;
       color: #ff66b2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px; /* Espaçamento entre o texto e os corações */
+    }
+    h1 span {
+      font-size: 1.5em; /* Tamanho dos corações */
     }
     .texto-especial {
       font-size: 1.3em;
@@ -38,72 +45,6 @@
     .fotos img:hover {
       transform: scale(1.05);
     }
-    /* Estilos da Linha do Tempo */
-    .timeline {
-      background-color: #cce7ff; /* Azul claro */
-      padding: 20px;
-      margin: 40px 0;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .timeline h2 {
-      font-size: 2em;
-      color: #ff66b2; /* Rosa */
-    }
-    .timeline-event {
-      padding: 10px;
-      margin: 10px 0;
-      background-color: #e6f2ff; /* Azul ainda mais suave */
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      position: relative;
-    }
-    .timeline-event h3 {
-      color: #d18ec9;
-    }
-    .timeline-event p {
-      color: #d18ec9;
-    }
-    .timeline-event button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: #ff007f;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .timeline-event button:hover {
-      background-color: #e55a94;
-    }
-    .add-event {
-      background-color: #fff;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .add-event input, .add-event textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      font-size: 1em;
-    }
-    .add-event button {
-      padding: 10px 20px;
-      background-color: #ff66b2;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .add-event button:hover {
-      background-color: #e55a94;
-    }
     footer {
       font-size: 1.2em;
       margin-top: 50px;
@@ -112,7 +53,11 @@
   </style>
 </head>
 <body>
-  <h1>❤ Nosso Amor ❤</h1>
+  <h1>
+    <span>❤️</span>
+    Nosso Amor
+    <span>❤️</span>
+  </h1>
   <p class="texto-especial">"Cada dia ao seu lado é um presente que quero guardar para sempre no meu coração."</p>
   <p>Estamos juntos há:</p>
   <div class="contador" id="contador"></div>
@@ -120,43 +65,9 @@
     <img src="F65C45F2-8E9C-4735-A9DB-B81793FB18F7.jpeg" alt="Foto do casal na praia">
     <img src="E9A4784E-6978-4C71-AD28-C0E6F0347C52.jpeg" alt="Foto do casal no carro">
   </div>
-
-  <div class="timeline">
-    <h2>Linha do Tempo</h2>
-    <div id="timeline-events"></div>
-  </div>
-
-  <div class="add-event">
-    <h3>Adicione um evento à linha do tempo</h3>
-    <label for="event-date">Data:</label>
-    <input type="date" id="event-date" required>
-    <label for="event-title">Título:</label>
-    <input type="text" id="event-title" placeholder="Ex: Dia em que nos conhecemos" required>
-    <label for="event-description">Descrição:</label>
-    <textarea id="event-description" rows="3" placeholder="Escreva uma breve descrição..." required></textarea>
-    <button id="add-event-btn">Adicionar Evento</button>
-  </div>
-
   <footer>Com muito amor, de mim para você! 💖</footer>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCEtGOJ0Il1C7tXe3CVz4QSvCU7wA_74NI",
-      authDomain: "nosso-amor-1f3e8.firebaseapp.com",
-      projectId: "nosso-amor-1f3e8",
-      storageBucket: "nosso-amor-1f3e8.appspot.com",
-      messagingSenderId: "380207057106",
-      appId: "1:380207057106:web:f2150d96af4018bc7d050b",
-      measurementId: "G-Z3DHV04CHB",
-      databaseURL: "https://nosso-amor-1f3e8-default-rtdb.firebaseio.com"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
-
+  <script>
     // Ajuste para o fuso horário local (Brasil)
     const startDate = new Date("2024-10-19T00:00:00-03:00");
 
@@ -167,55 +78,6 @@
       document.getElementById("contador").innerText = `${dias} dias`;
     }
     atualizaContador();
-
-    const timelineRef = ref(database, "timeline");
-
-    document.getElementById("add-event-btn").addEventListener("click", () => {
-      const date = document.getElementById("event-date").value;
-      const title = document.getElementById("event-title").value;
-      const description = document.getElementById("event-description").value;
-
-      if (date && title && description) {
-        // Corrigir a data ao adicionar o evento, ajustando o fuso horário
-        const adjustedDate = new Date(date + "T00:00:00-03:00");
-        push(timelineRef, { date: adjustedDate.toISOString(), title, description });
-
-        document.getElementById("event-date").value = "";
-        document.getElementById("event-title").value = "";
-        document.getElementById("event-description").value = "";
-      } else {
-        alert("Preencha todos os campos.");
-      }
-    });
-
-    const renderTimeline = (events) => {
-      const timelineDiv = document.getElementById("timeline-events");
-      timelineDiv.innerHTML = ""; 
-      events.forEach(event => {
-        const eventDiv = document.createElement("div");
-        eventDiv.classList.add("timeline-event");
-        eventDiv.setAttribute("data-id", event.id);
-        eventDiv.innerHTML = `
-          <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString("pt-BR")})</small></h3>
-          <p>${event.description}</p>
-          <button class="delete-btn">Excluir</button>
-        `;
-        timelineDiv.appendChild(eventDiv);
-
-        // Excluir evento
-        eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
-          const eventRef = ref(database, `timeline/${event.id}`);
-          remove(eventRef);
-        });
-      });
-    };
-
-    onValue(timelineRef, (snapshot) => {
-      const data = snapshot.val();
-      const events = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-      events.sort((a, b) => new Date(a.date) - new Date(b.date));
-      renderTimeline(events);
-    });
   </script>
 </body>
 </html>
