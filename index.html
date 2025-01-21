@@ -193,7 +193,7 @@
         eventDiv.classList.add("timeline-event");
         eventDiv.setAttribute("data-id", event.id);
         eventDiv.innerHTML = `
-          <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString()})</small></h3>
+          <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString("pt-BR")})</small></h3>
           <p>${event.description}</p>
           <button class="delete-btn">Excluir</button>
         `;
