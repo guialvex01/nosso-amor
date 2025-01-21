@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
@@ -159,11 +159,13 @@
     <button id="add-event-btn">Adicionar Evento</button>
   </div>
 
+  <button id="test-heart">Testar Animação de Coração</button>
+
   <footer>Com muito amor, de mim para você! 💖</footer>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCEtGOJ0Il1C7tXe3CVz4QSvCU7wA_74NI",
@@ -221,6 +223,10 @@
         coracao.remove();
       }, 2000); // O tempo da animação (2 segundos)
     }
+
+    document.getElementById("test-heart").addEventListener("click", () => {
+      addHeartAnimation();
+    });
 
     const renderTimeline = (events) => {
       const timelineDiv = document.getElementById("timeline-events");
