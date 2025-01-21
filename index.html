@@ -157,8 +157,9 @@
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
 
-    const startDate = new Date("2024-10-19");
-    
+    // Ajustando a data de início para considerar o fuso horário de Brasília (UTC-3)
+    const startDate = new Date("2024-10-19T00:00:00-03:00"); // Ajuste para fuso horário
+
     function atualizaContador() {
       const hoje = new Date();
       const diff = hoje - startDate;
