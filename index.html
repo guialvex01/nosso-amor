@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nosso Amor</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -115,6 +117,14 @@
       margin-top: 50px;
       color: #ff3399;
     }
+    #map {
+      height: 500px;
+      width: 100%;
+      margin-top: 20px;
+    }
+    .add-location {
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -134,22 +144,23 @@
     <div id="timeline-events"></div>
   </div>
 
-  <div class="add-event">
-    <h3>Adicione um evento à linha do tempo</h3>
-    <label for="event-date">Data:</label>
-    <input type="date" id="event-date" required>
-    <label for="event-title">Título:</label>
-    <input type="text" id="event-title" placeholder="Ex: Dia em que nos conhecemos" required>
-    <label for="event-description">Descrição:</label>
-    <textarea id="event-description" rows="3" placeholder="Escreva uma breve descrição..." required></textarea>
-    <button id="add-event-btn">Adicionar Evento</button>
+  <div id="map"></div>
+
+  <div class="add-location">
+    <h3>Adicione um local ao mapa</h3>
+    <form id="add-location-form">
+      <input type="text" id="location-name" placeholder="Nome do local" required>
+      <input type="number" step="any" id="location-lat" placeholder="Latitude" required>
+      <input type="number" step="any" id="location-lng" placeholder="Longitude" required>
+      <button type="submit">Adicionar Local</button>
+    </form>
   </div>
 
   <footer>Com muito amor, de mim para você! 💖</footer>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCEtGOJ0Il1C7tXe3CVz4QSvCU7wA_74NI",
@@ -165,61 +176,36 @@
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
 
-    const startDate = new Date("2024-10-19T00:00:00-03:00");
+    const map = L.map("map").setView([-14.235, -51.9253], 4);
 
-    function atualizaContador() {
-      const hoje = new Date();
-      const diff = hoje - startDate;
-      const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
-      document.getElementById("contador").innerText = `${dias} dias`;
-    }
-    atualizaContador();
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18
+    }).addTo(map);
 
-    const timelineRef = ref(database, "timeline");
+    const locationsRef = ref(database, "locations");
 
-    document.getElementById("add-event-btn").addEventListener("click", () => {
-      const date = document.getElementById("event-date").value;
-      const title = document.getElementById("event-title").value;
-      const description = document.getElementById("event-description").value;
+    document.getElementById("add-location-form").addEventListener("submit", (e) => {
+      e.preventDefault();
 
-      if (date && title && description) {
-        const adjustedDate = new Date(date + "T00:00:00-03:00");
-        push(timelineRef, { date: adjustedDate.toISOString(), title, description });
+      const name = document.getElementById("location-name").value;
+      const lat = parseFloat(document.getElementById("location-lat").value);
+      const lng = parseFloat(document.getElementById("location-lng").value);
 
-        document.getElementById("event-date").value = "";
-        document.getElementById("event-title").value = "";
-        document.getElementById("event-description").value = "";
-      } else {
-        alert("Preencha todos os campos.");
+      if (name && lat && lng) {
+        push(locationsRef, { name, lat, lng });
+        document.getElementById("add-location-form").reset();
       }
     });
 
-    const renderTimeline = (events) => {
-      const timelineDiv = document.getElementById("timeline-events");
-      timelineDiv.innerHTML = ""; 
-      events.forEach(event => {
-        const eventDiv = document.createElement("div");
-        eventDiv.classList.add("timeline-event");
-        eventDiv.setAttribute("data-id", event.id);
-        eventDiv.innerHTML = `
-          <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString("pt-BR")})</small></h3>
-          <p>${event.description}</p>
-          <button class="delete-btn">Excluir</button>
-        `;
-        timelineDiv.appendChild(eventDiv);
-
-        eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
-          const eventRef = ref(database, `timeline/${event.id}`);
-          remove(eventRef);
-        });
-      });
-    };
-
-    onValue(timelineRef, (snapshot) => {
+    onValue(locationsRef, (snapshot) => {
       const data = snapshot.val();
-      const events = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-      events.sort((a, b) => new Date(a.date) - new Date(b.date));
-      renderTimeline(events);
+      if (data) {
+        Object.values(data).forEach(location => {
+          L.marker([location.lat, location.lng])
+            .addTo(map)
+            .bindPopup(`<b>${location.name}</b>`);
+        });
+      }
     });
   </script>
 </body>
