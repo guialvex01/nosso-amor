@@ -84,12 +84,31 @@
     .timeline-event button:hover {
       background-color: #e55a94;
     }
-    #map {
-      height: 500px;
-      width: 100%;
+    .add-event {
+      background-color: #fff;
+      padding: 20px;
       margin: 20px 0;
       border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .add-event input, .add-event textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 1em;
+    }
+    .add-event button {
+      padding: 10px 20px;
+      background-color: #ff66b2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .add-event button:hover {
+      background-color: #e55a94;
     }
     footer {
       font-size: 1.2em;
@@ -97,7 +116,6 @@
       color: #ff3399;
     }
   </style>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
   <h1>
@@ -116,7 +134,16 @@
     <div id="timeline-events"></div>
   </div>
 
-  <div id="map"></div>
+  <div class="add-event">
+    <h3>Adicione um evento à linha do tempo</h3>
+    <label for="event-date">Data:</label>
+    <input type="date" id="event-date" required>
+    <label for="event-title">Título:</label>
+    <input type="text" id="event-title" placeholder="Ex: Dia em que nos conhecemos" required>
+    <label for="event-description">Descrição:</label>
+    <textarea id="event-description" rows="3" placeholder="Escreva uma breve descrição..." required></textarea>
+    <button id="add-event-btn">Adicionar Evento</button>
+  </div>
 
   <footer>Com muito amor, de mim para você! 💖</footer>
 
@@ -150,38 +177,49 @@
 
     const timelineRef = ref(database, "timeline");
 
-    function renderTimeline(events) {
+    document.getElementById("add-event-btn").addEventListener("click", () => {
+      const date = document.getElementById("event-date").value;
+      const title = document.getElementById("event-title").value;
+      const description = document.getElementById("event-description").value;
+
+      if (date && title && description) {
+        const adjustedDate = new Date(date + "T00:00:00-03:00");
+        push(timelineRef, { date: adjustedDate.toISOString(), title, description });
+
+        document.getElementById("event-date").value = "";
+        document.getElementById("event-title").value = "";
+        document.getElementById("event-description").value = "";
+      } else {
+        alert("Preencha todos os campos.");
+      }
+    });
+
+    const renderTimeline = (events) => {
       const timelineDiv = document.getElementById("timeline-events");
-      timelineDiv.innerHTML = "";
+      timelineDiv.innerHTML = ""; 
       events.forEach(event => {
         const eventDiv = document.createElement("div");
         eventDiv.classList.add("timeline-event");
+        eventDiv.setAttribute("data-id", event.id);
         eventDiv.innerHTML = `
           <h3>${event.title} <small>(${new Date(event.date).toLocaleDateString("pt-BR")})</small></h3>
           <p>${event.description}</p>
+          <button class="delete-btn">Excluir</button>
         `;
         timelineDiv.appendChild(eventDiv);
+
+        eventDiv.querySelector(".delete-btn").addEventListener("click", () => {
+          const eventRef = ref(database, `timeline/${event.id}`);
+          remove(eventRef);
+        });
       });
-    }
+    };
 
     onValue(timelineRef, (snapshot) => {
       const data = snapshot.val();
       const events = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+      events.sort((a, b) => new Date(a.date) - new Date(b.date));
       renderTimeline(events);
-    });
-
-    const map = L.map("map").setView([-15.794229, -47.882166], 4);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
-
-    const locationsRef = ref(database, "locations");
-
-    onValue(locationsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        Object.values(data).forEach(location => {
-          L.marker([location.lat, location.lng]).addTo(map).bindPopup(location.name);
-        });
-      }
     });
   </script>
 </body>
