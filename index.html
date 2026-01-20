@@ -177,22 +177,29 @@
 
     const timelineRef = ref(database, "timeline");
 
-    document.getElementById("add-event-btn").addEventListener("click", () => {
-      const date = document.getElementById("event-date").value;
-      const title = document.getElementById("event-title").value;
-      const description = document.getElementById("event-description").value;
+document.getElementById("add-event-btn").addEventListener("click", async () => {
+  const date = document.getElementById("event-date").value;
+  const title = document.getElementById("event-title").value;
+  const description = document.getElementById("event-description").value;
 
-      if (date && title && description) {
-        const adjustedDate = new Date(date + "T00:00:00-03:00");
-        push(timelineRef, { date: adjustedDate.toISOString(), title, description });
+  if (date && title && description) {
+    const adjustedDate = new Date(date + "T00:00:00-03:00");
 
-        document.getElementById("event-date").value = "";
-        document.getElementById("event-title").value = "";
-        document.getElementById("event-description").value = "";
-      } else {
-        alert("Preencha todos os campos.");
-      }
-    });
+    try {
+      const res = await push(timelineRef, { date: adjustedDate.toISOString(), title, description });
+      console.log("Salvou! ID:", res.key);
+
+      document.getElementById("event-date").value = "";
+      document.getElementById("event-title").value = "";
+      document.getElementById("event-description").value = "";
+    } catch (err) {
+      console.error("Erro ao salvar no Firebase:", err);
+      alert("Não consegui salvar. Veja o Console (F12).");
+    }
+  } else {
+    alert("Preencha todos os campos.");
+  }
+});
 
     const renderTimeline = (events) => {
       const timelineDiv = document.getElementById("timeline-events");
@@ -215,12 +222,21 @@
       });
     };
 
-    onValue(timelineRef, (snapshot) => {
-      const data = snapshot.val();
-      const events = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-      events.sort((a, b) => new Date(a.date) - new Date(b.date));
-      renderTimeline(events);
-    });
+onValue(
+  timelineRef,
+  (snapshot) => {
+    const data = snapshot.val();
+    const events = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+    events.sort((a, b) => new Date(a.date) - new Date(b.date));
+    renderTimeline(events);
+  },
+  (err) => {
+    console.error("Erro ao LER do Firebase (onValue):", err);
+    alert("Não consegui carregar a timeline. Veja o Console (F12).");
+  }
+);
+
   </script>
 </body>
 </html>
+
